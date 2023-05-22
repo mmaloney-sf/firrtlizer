@@ -1,8 +1,5 @@
-use lalrpop_util::lalrpop_mod;
-
-lalrpop_mod!(pub parser);
-
-pub mod lexer;
+pub mod parser;
+pub mod tokenizer;
 pub mod typecheck;
 pub mod ast;
 

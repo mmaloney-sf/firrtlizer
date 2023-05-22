@@ -1,9 +1,9 @@
-use firrtlizer::parser::TermParser;
-use firrtlizer::lexer::Lexer;
+use firrtlizer::tokenizer::tokenize;
 
 fn main() {
-    let parser = TermParser::new();
     let input = std::fs::read_to_string("Top.fir").unwrap();
-    let val = parser.parse(Lexer::new(input));
-    println!("{val:?}");
+    let toks = tokenize(&input).unwrap();
+    for tok in toks {
+        println!("{tok:?}");
+    }
 }
