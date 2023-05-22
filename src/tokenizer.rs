@@ -1,8 +1,6 @@
-use crate::ast::*;
-
-use nom::{Err, IResult};
+use nom::{IResult};
 use nom::bytes::complete::{tag};
-use nom::combinator::{value, opt, eof};
+use nom::combinator::{value, eof};
 use nom::branch::alt;
 use nom::multi::{many0, many1};
 use nom::character::complete::{space0, space1, satisfy};
