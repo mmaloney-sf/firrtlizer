@@ -26,6 +26,9 @@ pub enum Tok {
     Const,
     Circuit,
     Module,
+    Clock,
+    Reset,
+    AsyncReset,
     Wire,
     Node,
     Reg,
@@ -110,6 +113,7 @@ fn parse_token(input: &str) -> IResult<&str, Tok, ()> {
         value(Tok::RevFatArrow, tag("<=")),
         value(Tok::Dot, tag(".")),
         value(Tok::Comma, tag(",")),
+        parse_token_ground_type,
         parse_token_lp,
         parse_token_lit_num,
         parse_token_lit_str,
@@ -118,6 +122,14 @@ fn parse_token(input: &str) -> IResult<&str, Tok, ()> {
     ))(input)?;
     let (input, _) = space0(input)?;
     Ok((input, tok))
+}
+
+fn parse_token_ground_type(input: &str) -> IResult<&str, Tok, ()> {
+    alt((
+        value(Tok::Clock, tag("Clock")),
+        value(Tok::Reset, tag("Reset")),
+        value(Tok::AsyncReset, tag("AsyncReset")),
+    ))(input)
 }
 
 fn parse_keyword(input: &str) -> IResult<&str, Tok, ()> {

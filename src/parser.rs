@@ -120,6 +120,21 @@ fn parse_module(input: &[Tok]) -> IResult<&[Tok], ModDef, ()> {
     Ok((input, moddef))
 }
 
+fn parse_type(input: &[Tok]) -> IResult<&[Tok], Type, ()> {
+//    let (input, constness) = opt(tok(Tok::Const))(input)?; // todo!() only for ground and aggregates
+    let (input, typ) = parse_type_ground(input)?;
+    Ok((input, typ))
+}
+
+fn parse_type_ground(input: &[Tok]) -> IResult<&[Tok], Type, ()> {
+    Ok(alt((
+        value(Type::Clock, tok(Tok::Clock)),
+        value(Type::Reset, tok(Tok::Reset)),
+        value(Type::AsyncReset, tok(Tok::AsyncReset)),
+    ))(input)?)
+//    Clock" | "Reset" | "AsyncReset" | ( "UInt" | "SInt" | "Analog" ) ,
+}
+
 fn parse_port(input: &[Tok]) -> IResult<&[Tok], Port, ()> {
     let (input, dir) = alt((tok(Tok::Input), tok(Tok::Output)))(input)?;
     let direction = match dir {
@@ -130,11 +145,11 @@ fn parse_port(input: &[Tok]) -> IResult<&[Tok], Port, ()> {
 
     let (input, name) = tok_id(input)?;
     let (input, _) = tok(Tok::Colon)(input)?;
-    let (input, typ) = tok_id(input)?;
+    let (input, typ) = parse_type(input)?;
     let port = Port {
         name,
         direction,
-        typ: Type::Clock,
+        typ,
     };
     Ok((input, port))
 }
