@@ -1,11 +1,12 @@
 use std::str::FromStr;
 use crate::lexer;
+use lexer::*;
 
 grammar;
 
 pub Term: i32 = {
-    "flip" => 0,
-//    "(" <t:Term> ")" => 0,
+    "circuit" => 0,
+    "<id>" => 1,
 };
 
 //Num: i32 = <s:r"[0-9]+"> => i32::from_str(s).unwrap();
@@ -15,6 +16,10 @@ extern {
     type Error = lexer::LexicalError;
 
     enum lexer::Tok {
-        "flip" => lexer::Tok::Flip,
+        "circuit" => Tok::Circuit,
+        "module" => Tok::Module,
+        "flip" => Tok::Flip,
+        ":" => Tok::Colon,
+        "<id>" => Tok::Ident,
     }
 }

@@ -2,21 +2,108 @@ use std::io::{Read, BufReader};
 pub type Spanned<Tok, Loc, Error> = Result<(Loc, Tok, Loc), Error>;
 use regex::Regex;
 
-#[derive(Clone, Debug)]
+use nom::{Err, IResult, Parser};
+use nom::bytes::complete::{tag};
+use nom::combinator::{value, opt, eof};
+use nom::branch::alt;
+use nom::multi::{many0, many1};
+use nom::character::complete::{space0, satisfy};
+
+fn parse_tokens(input: &str) -> IResult<&str, Vec<Tok>, ()> {
+    let (input, tokens) = many0(parse_token)(input)?;
+    eof(input)?;
+    Ok(("", tokens))
+}
+
+fn parse_token(input: &str) -> IResult<&str, Tok, ()> {
+    let (input, _) = space0(input)?;
+    alt((
+        value(Tok::Circuit, tag("circuit")),
+        value(Tok::Module, tag("module")),
+        value(Tok::Input, tag("input")),
+        value(Tok::Output, tag("output")),
+        value(Tok::Flip, tag("flip")),
+        value(Tok::Colon, tag(":")),
+        value(Tok::RevFatArrow, tag("<=")),
+        value(Tok::LAngle, tag("<")),
+        value(Tok::RAngle, tag(">")),
+        value(Tok::LParen, tag("(")),
+        value(Tok::RParen, tag(")")),
+        value(Tok::LSquare, tag("[")),
+        value(Tok::RSquare, tag("]")),
+        value(Tok::LBrace, tag("{")),
+        value(Tok::RBrace, tag("}")),
+        value(Tok::Dot, tag(".")),
+        parse_token_lit_num,
+        parse_token_lit_str,
+        parse_token_ident,
+        parse_token_info,
+    ))(input)
+}
+
+fn parse_token_info(input: &str) -> IResult<&str, Tok, ()> {
+    let (input, _) = tag("@[")(input)?;
+    let (input, contents) = many0(satisfy(|ch| ch != ']'))(input)?;
+    let (input, _) = tag("]")(input)?;
+    Ok((input, Tok::Info(contents.into_iter().collect::<String>())))
+}
+
+fn parse_token_ident(input: &str) -> IResult<&str, Tok, ()> {
+    let (input, head_char) = satisfy(|ch| ch.is_alphabetic())(input)?;
+    let (input, tail_chars) = many0(satisfy(|ch| ch.is_alphanumeric() || ch == '_'))(input)?;
+    let mut result = String::new();
+    result.push(head_char);
+    result.push_str(&tail_chars.into_iter().collect::<String>());
+    let token = Tok::Ident(result);
+    Ok((input, token))
+}
+
+fn parse_token_lit_num(input: &str) -> IResult<&str, Tok, ()> {
+    let (input, number) = many1(satisfy(|ch| ch.is_numeric()))(input)?;
+    let number = number.into_iter().collect::<String>();
+    let token = Tok::Lit(number.parse().unwrap());
+    Ok((input, token))
+}
+
+fn parse_token_lit_str(input: &str) -> IResult<&str, Tok, ()> {
+    let (input, _) = tag("\"")(input)?;
+    let (input, contents) = many0(satisfy(|ch| ch != '\"'))(input)?;
+    let (input, _) = tag("\"")(input)?;
+    let token = Tok::LitStr(contents.into_iter().collect::<String>());
+    Ok((input, token))
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub enum Tok {
     Unknown,
     Indent,
     Dedent,
     Newline,
+    Colon,
+    Input,
+    Output,
+    Flip,
     Ident(String),
     Lit(u64),
+    LitStr(String),
+    Info(String),
     Const,
     Circuit,
-    Flip,
+    Module,
     Wire,
     Reg,
     Inst,
+    RevFatArrow,
+    Dot,
     Mod,
+    LSquare,
+    RSquare,
+    LParen,
+    RParen,
+    LBrace,
+    RBrace,
+    LAngle,
+    RAngle,
 }
 
 #[derive(Debug)]
@@ -57,34 +144,6 @@ pub struct Lexer {
     index: usize,
 }
 
-fn consume_keyword<'a>(line: &mut [u8], keyword: &str) -> bool {
-    todo!()
-        /*
-    let keyword_bytes = keyword.as_bytes();
-
-    if line.starts_with(keyword_bytes) {
-        if line.len() == keyword_bytes.len() {
-            *line = line[keyword_bytes.len()..];
-            return true;
-        } else if line[keyword_bytes.len()] == ' ' as u8 {
-            &line[keyword_bytes.len()..]
-        } else {
-            line
-        }
-    } else {
-        line
-    }
-    */
-}
-
-fn consume_whitespace<'a>(line: &'a [u8]) -> &'a [u8] {
-    let mut i = 0;
-    while i < line.len() && line[i] == ' ' as u8 {
-        i += 1;
-    }
-    &line[i..]
-}
-
 impl Lexer {
     pub fn new(input: String) -> Self {
         let loc_toks: Vec<(Loc, Tok, Loc)> = vec![];
@@ -95,7 +154,11 @@ impl Lexer {
         };
 
         for (lineno, line) in input.lines().enumerate() {
-            let line_loc_toks = Lexer::tokenize_line(&line.as_bytes(), lineno, 0);
+            let end_idx = match line.find(';') {
+                Some(i) => i,
+                None => line.len(),
+            };
+            let line_loc_toks = Lexer::tokenize_line(&line.as_bytes()[..end_idx], lineno, 0);
             result.loc_toks.extend_from_slice(&line_loc_toks);
         }
 
@@ -103,8 +166,25 @@ impl Lexer {
     }
 
     fn tokenize_line(line: &[u8], lineno: usize, current_indent: usize) -> Vec<(Loc, Tok, Loc)> {
-        todo!()
-            /*
+        let mut toks = vec![];
+        let mut line = String::from_utf8(line.to_vec()).unwrap();
+        println!("{line}");
+        while line != "" {
+            let (line2, tok) = parse_token(&line).unwrap();
+            println!("{tok:?}");
+            toks.push(tok);
+            line = line2.to_string();
+        }
+
+        toks.into_iter().map(|tok| (Loc::default(), tok, Loc::default())).collect()
+        /*
+        match parse_tokens(&line) {
+            Ok((_, toks)) => return toks.into_iter().map(|tok| (Loc::default(), tok, Loc::default())).collect(),
+            Err(e) => { eprintln!("{e:?}"); panic!() },
+        }
+        */
+    }
+        /*
         let mut loc_toks = vec![];
         let leading_spaces = leading_spaces(line);
         let loc = Loc::new(lineno, 0);
@@ -132,8 +212,7 @@ impl Lexer {
         let loc = Loc::new(lineno, line.len());
         loc_toks.push((loc.clone(), Tok::Newline, loc));
         loc_toks
-    */
-    }
+        */
 }
 
 impl Iterator for Lexer {
@@ -143,7 +222,6 @@ impl Iterator for Lexer {
         if self.index < self.loc_toks.len() {
             let loc_tok = self.loc_toks[self.index].clone();
             self.index += 1;
-            println!("{:?}", &loc_tok.1);
             Some(Ok(loc_tok))
         } else {
             None
