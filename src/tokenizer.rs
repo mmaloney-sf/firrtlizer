@@ -65,8 +65,10 @@ pub fn tokenize(input: &str) -> anyhow::Result<Vec<Tok>> {
         for tok in line_toks {
             toks.push(tok);
         }
-
         toks.push(Tok::Newline);
+    }
+    for _ in 0..indent_level {
+        toks.push(Tok::Dedent);
     }
     Ok(toks)
 }
@@ -124,6 +126,7 @@ fn parse_keyword(input: &str) -> IResult<&str, Tok, ()> {
         value(Tok::Module, tag("module")),
         value(Tok::Input, tag("input")),
         value(Tok::Output, tag("output")),
+        value(Tok::Const, tag("const")),
         value(Tok::Wire, tag("wire")),
         value(Tok::Node, tag("node")),
         value(Tok::Reg, tag("reg")),
