@@ -5,7 +5,7 @@ use nom::bytes::complete::{tag};
 use nom::combinator::{value, opt, eof};
 use nom::branch::alt;
 use nom::multi::{many0, many1};
-use nom::character::complete::{space0, satisfy};
+use nom::character::complete::{space0, space1, satisfy};
 use nom::sequence::pair;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -20,6 +20,7 @@ pub enum Tok {
     Flip,
     EqEq,
     Eq,
+    Version(usize, usize, usize),
     Ident(String),
     Lit(u64),
     LitStr(String),
@@ -60,7 +61,7 @@ pub fn tokenize(input: &str) -> anyhow::Result<Vec<Tok>> {
             toks.push(Tok::Dedent);
             indent_level -= 1;
         }
-        println!("{line}");
+//        println!("{line}");
         let line = String::from_utf8((&line.as_bytes()[leading_spaces as usize..]).to_vec()).unwrap();
         let (_, line_toks) = tokenize_line(&line)?;
         for tok in line_toks {
@@ -101,6 +102,7 @@ fn tokenize_line(input: &str) -> IResult<&str, Vec<Tok>, ()> {
 
 fn parse_token(input: &str) -> IResult<&str, Tok, ()> {
     let (input, tok) = alt((
+        parse_token_version,
         parse_keyword,
         value(Tok::Colon, tag(":")),
         value(Tok::EqEq, tag("==")),
@@ -144,6 +146,25 @@ fn parse_token_lp(input: &str) -> IResult<&str, Tok, ()> {
         value(Tok::RBrace, tag("}")),
     ))(input)
 }
+
+fn parse_token_version(input: &str) -> IResult<&str, Tok, ()> {
+    let (input, _) = tag("FIRRTL")(input)?;
+    let (input, _) = space1(input)?;
+    let (input, _) = tag("version")(input)?;
+    let (input, _) = space1(input)?;
+    let (input, major) = many1(satisfy(|ch| ch.is_numeric()))(input)?;
+    let (input, _) = tag(".")(input)?;
+    let (input, minor) = many1(satisfy(|ch| ch.is_numeric()))(input)?;
+    let (input, _) = tag(".")(input)?;
+    let (input, patch) = many1(satisfy(|ch| ch.is_numeric()))(input)?;
+    let major = major.into_iter().collect::<String>();
+    let minor = minor.into_iter().collect::<String>();
+    let patch = patch.into_iter().collect::<String>();
+    let tok = Tok::Version(major.parse().unwrap(), minor.parse().unwrap(), patch.parse().unwrap());
+    Ok((input, tok))
+}
+//version = "FIRRTL" , "version" , sem_ver ;
+
 
 fn parse_token_info(input: &str) -> IResult<&str, Tok, ()> {
     let (input, _) = tag("@[")(input)?;
