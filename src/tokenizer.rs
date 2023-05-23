@@ -8,7 +8,9 @@ use nom::sequence::pair;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum Tok {
-    Unknown,
+    UInt,
+    SInt,
+    Analog,
     Indent,
     Dedent,
     Newline,
@@ -144,6 +146,9 @@ fn parse_keyword(input: &str) -> IResult<&str, Tok, ()> {
         value(Tok::Reg, tag("reg")),
         value(Tok::Mem, tag("mem")),
         value(Tok::Flip, tag("flip")),
+        value(Tok::Flip, tag("UInt")),
+        value(Tok::Flip, tag("SInt")),
+        value(Tok::Flip, tag("Analog")),
     ))(input)
 }
 

@@ -5,66 +5,108 @@ use nom::branch::alt;
 use nom::multi::{many0, many1};
 use nom::character::complete::{space0, space1, satisfy};
 use nom::sequence::pair;
+use nom::error::ParseError;
 
 use crate::tokenizer::Tok;
 use crate::ast::*;
 use crate::{Direction, Type};
 
-fn tok<'a>(expected_tok: Tok) -> impl Fn(&'a [Tok]) -> IResult<&'a [Tok], Tok, ()> {
-    let run = move |input: &'a [Tok]| -> IResult<&'a [Tok], Tok, ()> {
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct Error {
+    msg: String,
+}
+
+impl Error {
+    pub fn new(msg: String) -> Error {
+        Error {
+            msg,
+        }
+    }
+}
+
+impl ParseError<&[Tok]> for Error {
+    fn from_error_kind(_input: &[Tok], kind: nom::error::ErrorKind) -> Self {
+        Error {
+            msg: format!("{kind:?}"),
+        }
+    }
+
+    fn append(_input: &[Tok], kind: nom::error::ErrorKind, other: Self) -> Self {
+        Error {
+            msg: format!("{}: {kind:?}", other.msg),
+        }
+    }
+}
+
+fn tok<'a>(expected_tok: Tok) -> impl Fn(&'a [Tok]) -> IResult<&'a [Tok], Tok, Error> {
+    let run = move |input: &'a [Tok]| -> IResult<&'a [Tok], Tok, Error> {
         if input.len() == 0 {
-            Err(nom::Err::Error(()))
+            Err(nom::Err::Error(Error::new("Unexpected EOF".to_string())))
         } else {
             let head = &input[0];
             let tail = &input[1..];
             if head == &expected_tok {
                 Ok((tail, head.clone()))
             } else {
-                Err(nom::Err::Error(()))
+                Err(nom::Err::Error(Error::new(format!("Unexpected token: {head:?} expected: {expected_tok:?}"))))
             }
         }
     };
     run
 }
 
-fn tok_version<'a>(input: &'a [Tok]) -> IResult<&'a [Tok], Tok, ()> {
+fn tok_version<'a>(input: &'a [Tok]) -> IResult<&'a [Tok], Tok, Error> {
     if input.len() == 0 {
-        Err(nom::Err::Error(()))
+        Err(nom::Err::Error(Error::new("Unexpected EOF".to_string())))
     } else {
         let head = &input[0];
         let tail = &input[1..];
         if let Tok::Version(_maj, _min, _pat) = head {
             Ok((tail, head.clone()))
         } else {
-            Err(nom::Err::Error(()))
+            Err(nom::Err::Error(Error::new(format!("Unexpected token: {head:?} (expected version)"))))
         }
     }
 }
 
-fn tok_id<'a>(input: &'a [Tok]) -> IResult<&'a [Tok], String, ()> {
+fn tok_id<'a>(input: &'a [Tok]) -> IResult<&'a [Tok], String, Error> {
     if input.len() == 0 {
-        Err(nom::Err::Error(()))
+        Err(nom::Err::Error(Error::new("Unexpected EOF".to_string())))
     } else {
         let head = &input[0];
         let tail = &input[1..];
         if let Tok::Ident(name) = head {
             Ok((tail, name.clone()))
         } else {
-            Err(nom::Err::Error(()))
+            Err(nom::Err::Error(Error::new(format!("Unexpected token: {head:?} (expected identifier)"))))
         }
     }
 }
 
-fn tok_info<'a>(input: &'a [Tok]) -> IResult<&'a [Tok], Tok, ()> {
+fn tok_lit<'a>(input: &'a [Tok]) -> IResult<&'a [Tok], u64, Error> {
     if input.len() == 0 {
-        Err(nom::Err::Error(()))
+        Err(nom::Err::Error(Error::new("Unexpected EOF".to_string())))
+    } else {
+        let head = &input[0];
+        let tail = &input[1..];
+        if let Tok::Lit(v) = head {
+            Ok((tail, *v))
+        } else {
+            Err(nom::Err::Error(Error::new(format!("Unexpected token: {head:?} (expected lit)"))))
+        }
+    }
+}
+
+fn tok_info<'a>(input: &'a [Tok]) -> IResult<&'a [Tok], Tok, Error> {
+    if input.len() == 0 {
+        Err(nom::Err::Error(Error::new("Unexpected EOF".to_string())))
     } else {
         let head = &input[0];
         let tail = &input[1..];
         if let Tok::Info(_info) = head {
             Ok((tail, head.clone()))
         } else {
-            Err(nom::Err::Error(()))
+            Err(nom::Err::Error(Error::new("Unexpected token. Expected info token.".to_string())))
         }
     }
 }
@@ -84,11 +126,12 @@ pub fn parse(input: &[Tok]) -> anyhow::Result<Circuit> {
     let (input, moddefs) = many0(parse_module)(input)?;
     println!("Here: {input:?}");
     let (input, _) = tok(Tok::Dedent)(input)?;
+    println!("Okay?");
     let (input, _) = many0(alt((tok(Tok::Newline), tok(Tok::Dedent))))(input)?;
     if input.len() > 0 {
         println!("Leftovers: {input:?}");
     }
-    //let (input, _) = eof::<&[Tok], ()>(input)?;
+    //let (input, _) = eof::<&[Tok], Error>(input)?;
 
     Ok(Circuit {
         top: id,
@@ -96,7 +139,7 @@ pub fn parse(input: &[Tok]) -> anyhow::Result<Circuit> {
     })
 }
 
-fn parse_module(input: &[Tok]) -> IResult<&[Tok], ModDef, ()> {
+fn parse_module(input: &[Tok]) -> IResult<&[Tok], ModDef, Error> {
     let (input, _) = tok(Tok::Module)(input)?;
     let (input, id) = tok_id(input)?;
     dbg!(&id);
@@ -120,22 +163,40 @@ fn parse_module(input: &[Tok]) -> IResult<&[Tok], ModDef, ()> {
     Ok((input, moddef))
 }
 
-fn parse_type(input: &[Tok]) -> IResult<&[Tok], Type, ()> {
+fn parse_type(input: &[Tok]) -> IResult<&[Tok], Type, Error> {
 //    let (input, constness) = opt(tok(Tok::Const))(input)?; // todo!() only for ground and aggregates
     let (input, typ) = parse_type_ground(input)?;
     Ok((input, typ))
 }
 
-fn parse_type_ground(input: &[Tok]) -> IResult<&[Tok], Type, ()> {
-    Ok(alt((
+fn parse_type_ground(input: &[Tok]) -> IResult<&[Tok], Type, Error> {
+    if let Ok((input, typ)) = alt((
         value(Type::Clock, tok(Tok::Clock)),
         value(Type::Reset, tok(Tok::Reset)),
         value(Type::AsyncReset, tok(Tok::AsyncReset)),
-    ))(input)?)
-//    Clock" | "Reset" | "AsyncReset" | ( "UInt" | "SInt" | "Analog" ) ,
+    ))(input) {
+        return Ok((input, typ));
+    }
+
+    let (input, tok) = alt((
+            tok(Tok::UInt),
+            tok(Tok::SInt),
+            tok(Tok::Analog),
+    ))(input)?;
+
+    let (input, size) = opt(tok_lit)(input)?;
+
+    let typ = match tok {
+        Tok::UInt => Type::UInt(size),
+        Tok::SInt => Type::SInt(size),
+//        Tok::Analog => Type::Analog(size),
+        _ => unreachable!(),
+    };
+
+    Ok((input, todo!()))
 }
 
-fn parse_port(input: &[Tok]) -> IResult<&[Tok], Port, ()> {
+fn parse_port(input: &[Tok]) -> IResult<&[Tok], Port, Error> {
     let (input, dir) = alt((tok(Tok::Input), tok(Tok::Output)))(input)?;
     let direction = match dir {
         Tok::Input => Direction::Input,
@@ -146,6 +207,7 @@ fn parse_port(input: &[Tok]) -> IResult<&[Tok], Port, ()> {
     let (input, name) = tok_id(input)?;
     let (input, _) = tok(Tok::Colon)(input)?;
     let (input, typ) = parse_type(input)?;
+    let (input, info) = opt(tok_info)(input)?;
     let port = Port {
         name,
         direction,
@@ -154,5 +216,5 @@ fn parse_port(input: &[Tok]) -> IResult<&[Tok], Port, ()> {
     Ok((input, port))
 }
 
-fn parse_extmodule(input: &[Tok]) -> IResult<&[Tok], Tok, ()> { todo!() }
-fn parse_intmodule(input: &[Tok]) -> IResult<&[Tok], Tok, ()> { todo!() }
+fn parse_extmodule(input: &[Tok]) -> IResult<&[Tok], Tok, Error> { todo!() }
+fn parse_intmodule(input: &[Tok]) -> IResult<&[Tok], Tok, Error> { todo!() }

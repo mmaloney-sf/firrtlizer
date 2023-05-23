@@ -5,8 +5,8 @@ pub mod ast;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Type {
-    UInt(Option<usize>),
-    SInt(Option<usize>),
+    UInt(Option<u64>),
+    SInt(Option<u64>),
     Clock,
     Reset,
     AsyncReset,
@@ -47,8 +47,8 @@ pub enum Component {
 
 #[derive(Debug, Clone)]
 pub enum Value {
-    UInt(usize, usize),
-    SInt(usize, usize),
+    UInt(u64, u64),
+    SInt(i64, u64),
     Vec(Vec<Value>),
     //Ref(Path) // todo!()
     // Clock?
@@ -144,8 +144,8 @@ impl Expr {
         match self {
             Expr::Lit(v) => {
                 match v {
-                    Value::UInt(_n, width) => *width,
-                    Value::SInt(_n, width) => *width,
+                    Value::UInt(_n, width) => *width as usize,
+                    Value::SInt(_n, width) => *width as usize,
                     Value::Vec(_vs) => todo!(),
                 }
             },

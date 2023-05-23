@@ -11,6 +11,7 @@ fn main() {
             println!();
         }
     }
+    println!();
     let circuit = parse(&toks).unwrap();
     dbg!(circuit);
 }
