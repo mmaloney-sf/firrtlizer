@@ -72,7 +72,7 @@ fn consume_id<'a, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], &'a str, P
     if let Ok((input, Tok::Id(id))) = tok(input) {
         Ok((input, id))
     } else {
-        Err(nom::Err::Failure(ParseErr::new(format!("Expected identifier"))))
+        Err(nom::Err::Error(ParseErr::new(format!("Expected identifier"))))
     }
 }
 
@@ -95,7 +95,7 @@ fn consume_newline<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], (
     if let Ok((input, Tok::Newline)) = tok(input) {
         Ok((input, ()))
     } else {
-        Err(nom::Err::Failure(ParseErr::new(format!("Expected newline"))))
+        Err(nom::Err::Error(ParseErr::new(format!("Expected newline"))))
     }
 }
 
@@ -132,42 +132,11 @@ fn consume_dedent<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], ()
 }
 
 /*
-fn flip_tok(input: &[Tok<'a>]) -> IResult<&[Tok<'a>], Flippedness, Error> {
-    let (input, ok) = opt(expect_tok(Tok::Flip))(input)?;
-    match ok {
-        Some(()) => Ok((input, Flippedness::Flipped)),
-        None => Ok((input, Flippedness::Aligned)),
-    }
-}
-
-fn parse_type_aggregate(input: &[Tok<'a>]) -> IResult<&[Tok<'a>], Type, Error> {
-    alt((
-        parse_type_aggregate_bundle,
-        parse_type_aggregate_vec,
-    ))(input)
-}
-
-fn parse_type_aggregate_bundle(input: &[Tok<'a>]) -> IResult<&[Tok<'a>], Type, Error> {
-    let (input, _) = expect_tok(Tok::LBrace)(input)?;
-    let (input, fields) = many1(parse_field)(input)?;
-    let (input, _) = expect_tok(Tok::RBrace)(input)?;
-    Ok((input, Type::Bundle(fields)))
-}
 
 fn parse_type_aggregate_vec(input: &[Tok<'a>]) -> IResult<&[Tok<'a>], Type, Error> {
     Err(nom::Err::Error(Error::new(format!("Not implemented: parse_type_aggregate_vec"))))
     // | type , "[" , int_any , "]" ;
 }
-
-fn parse_field(input: &[Tok<'a>]) -> IResult<&[Tok<'a>], BundleField, Error> {
-    let (input, flip) = flip_tok(input)?;
-    let (input, name) = tok_id(input)?;
-    let (input, _) = expect_tok(Tok::Colon)(input)?;
-    let (input, typ) = parse_type(input)?;
-    let field = BundleField(flip, name, Box::new(typ));
-    Ok((input, field))
-}
-
 
 fn parse_extmodule(input: &[Tok<'a>]) -> IResult<&[Tok<'a>], Tok, Error> { todo!() }
 fn parse_intmodule(input: &[Tok<'a>]) -> IResult<&[Tok<'a>], Tok, Error> { todo!() }
@@ -175,11 +144,25 @@ fn parse_intmodule(input: &[Tok<'a>]) -> IResult<&[Tok<'a>], Tok, Error> { todo!
 
 fn parse_type<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], Type, ParseErr> {
 //    let (input, constness) = opt(tok(Tok::Const))(input)?; // todo!() only for ground and aggregates
-    let (input, typ) = alt((
+    println!("here");
+    let (input, mut typ) = alt((
         parse_type_ground,
-//        parse_type_aggregate,
+        parse_type_bundle,
     ))(input)?;
+
+    let (input, vec_sizes) = many0(parse_vec_size)(input)?;
+    for vec_size in vec_sizes {
+        typ = Type::Vec(vec_size as usize, Box::new(typ));
+    }
+
     Ok((input, typ))
+}
+
+fn parse_vec_size<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], u64, ParseErr> {
+    let (input, _) = consume_punc("[")(input)?;
+    let (input, v) = consume_lit(input)?;
+    let (input, _) = consume_punc("]")(input)?;
+    Ok((input, v))
 }
 
 fn parse_type_ground<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], Type, ParseErr> {
@@ -214,6 +197,32 @@ fn parse_width<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], u64, 
     let (input, v) = consume_lit(input)?;
     let (input, _) = consume_punc(">")(input)?;
     Ok((input, v))
+}
+
+fn parse_type_bundle<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], Type, ParseErr> {
+    let (input, _) = consume_punc("{")(input)?;
+    let (input, fields) = dbg!(many1(parse_field)(input))?;
+    let (input, _) = consume_punc("}")(input)?;
+    let typ = Type::Bundle(fields);
+    Ok((input, typ))
+}
+
+fn parse_flip<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], Flippedness, ParseErr> {
+    let (input, ok) = opt(consume_keyword("flip"))(input)?;
+    match ok {
+        Some(_) => Ok((input, Flippedness::Flipped)),
+        None => Ok((input, Flippedness::Aligned)),
+    }
+}
+
+fn parse_field<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], BundleField, ParseErr> {
+    println!("Parse field {input:?}");
+    let (input, flip) = parse_flip(input)?;
+    let (input, name) = consume_id(input)?;
+    let (input, _) = consume_punc(":")(input)?;
+    let (input, typ) = parse_type(input)?;
+    let field = BundleField(flip, name.to_string(), Box::new(typ));
+    Ok((input, field))
 }
 
 fn parse_direction<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], Direction, ParseErr> {
@@ -287,7 +296,9 @@ pub fn parse<'a>(input: &[Tok<'a>]) -> anyhow::Result<Circuit> {
     let (input, _) = consume_newline(input)?;
     let (input, _) = consume_indent(input)?;
     let (input, decls) = many1(parse_decl)(input)?;
-    let (input, _) = consume_dedent(input)?;
+
+    let (input, _) = many0(consume_newline)(input)?;
+    let (_input, _) = consume_dedent(input)?;
 
     Ok(Circuit {
         top,
