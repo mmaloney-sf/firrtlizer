@@ -159,12 +159,7 @@ fn tokenize_line<'a>(input: &'a str) -> IResult<&str, Vec<Tok<'a>>, ()> {
 fn parse_token<'a>(input: &'a str) -> IResult<&str, Tok<'a>, ()> {
     let (input, tok) = alt((
         parse_token_version,
-        value(Tok::Punc(Loc::default(), &input[..1]), tag("==")),
-        value(Tok::Punc(Loc::default(), &input[..1]), tag("<=")),
-        value(Tok::Punc(Loc::default(), &input[..1]), tag(":")),
-        value(Tok::Punc(Loc::default(), &input[..1]), tag("=")),
-        value(Tok::Punc(Loc::default(), &input[..1]), tag(".")),
-        value(Tok::Punc(Loc::default(), &input[..1]), tag(",")),
+        parse_punc,
         parse_token_lp,
         parse_token_lit_num,
         parse_token_lit_str,
@@ -172,6 +167,20 @@ fn parse_token<'a>(input: &'a str) -> IResult<&str, Tok<'a>, ()> {
         parse_token_info,
     ))(input)?;
     let (input, _) = space0(input)?;
+    Ok((input, tok))
+}
+
+fn parse_punc<'a>(input: &'a str) -> IResult<&str, Tok<'a>, ()> {
+    let orig_input = input;
+    let (input, s) = alt((
+        tag("<="),
+        tag("=="),
+        tag(":"),
+        tag("="),
+        tag("."),
+        tag(","),
+    ))(input)?;
+    let tok = Tok::Punc(Loc::default(), &orig_input[..s.len()]);
     Ok((input, tok))
 }
 

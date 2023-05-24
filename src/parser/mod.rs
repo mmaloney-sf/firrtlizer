@@ -1,15 +1,18 @@
+mod statement;
+mod expr;
+
 use nom::IResult;
-use nom::bytes::complete::tag;
 use nom::combinator::{value, eof, opt, map};
 use nom::branch::alt;
 use nom::multi::{many0, many1};
-use nom::character::complete::{space0, space1, satisfy};
 use nom::sequence::pair;
 use nom::error::ParseError;
 
 use crate::tokenizer::Tok;
+use crate::RefPath;
 use crate::ast::*;
 use crate::{Direction, Type, BundleField, Flippedness};
+use statement::parse_statement;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ParseErr {
@@ -147,9 +150,20 @@ fn parse_extmodule(input: &[Tok<'a>]) -> IResult<&[Tok<'a>], Tok, Error> { todo!
 fn parse_intmodule(input: &[Tok<'a>]) -> IResult<&[Tok<'a>], Tok, Error> { todo!() }
 */
 
+fn parse_reference<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], RefPath, ParseErr> {
+    let (input, refpath) = parse_reference_static(input)?;
+    Ok((input, refpath))
+}
+
+fn parse_reference_static<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], RefPath, ParseErr> {
+    let (input, name) = consume_id(input)?;
+    let mut refpath = RefPath::Id(name.to_string());
+//    parse_vec_size
+    Ok((input, refpath))
+}
+
 fn parse_type<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], Type, ParseErr> {
 //    let (input, constness) = opt(tok(Tok::Const))(input)?; // todo!() only for ground and aggregates
-    println!("here");
     let (input, mut typ) = alt((
         parse_type_ground,
         parse_type_bundle,
@@ -255,12 +269,6 @@ fn parse_port<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], Port, 
     Ok((input, port))
 }
 
-fn parse_statement<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], Statement, ParseErr> {
-    alt((
-        value(Statement::Skip, consume_keyword("skip")),
-    ))(input)
-}
-
 fn parse_module<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], ModDef, ParseErr> {
     let (input, _) = consume_keyword("module")(input)?;
     let (input, id) = consume_id(input)?;
@@ -294,7 +302,7 @@ fn parse_module<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], ModD
     let moddef = ModDef {
         name: id.to_string(),
         ports,
-        statements: vec![],
+        statements,
     };
     Ok((input, moddef))
 }
