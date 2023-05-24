@@ -50,6 +50,34 @@ impl<'a> Tok<'a> {
             Tok::Newline(loc) => loc,
         }
     }
+
+    fn loc_mut(&mut self) -> &mut Loc {
+        match self {
+            Tok::Indent(loc, _, _) => loc,
+            Tok::Dedent(loc, _, _) => loc,
+            Tok::Version(loc, _, _, _) => loc,
+            Tok::Id(loc, _) => loc,
+            Tok::Lit(loc, _) => loc,
+            Tok::LitStr(loc, _) => loc,
+            Tok::Info(loc, _) => loc,
+            Tok::Punc(loc, _) => loc,
+            Tok::Newline(loc) => loc,
+        }
+    }
+
+    fn pos(&self) -> usize {
+        match self {
+            Tok::Indent(_loc, s, _) => s.as_ptr() as usize,
+            Tok::Dedent(_loc, s, _) => s.as_ptr() as usize,
+            Tok::Version(_loc, _, _, _) => 0,
+            Tok::Id(_loc, s) => s.as_ptr() as usize,
+            Tok::Lit(_loc, s) => 0,
+            Tok::LitStr(_loc, s) => s.as_ptr() as usize,
+            Tok::Info(_loc, s) => s.as_ptr() as usize,
+            Tok::Punc(_loc, s) => s.as_ptr() as usize,
+            Tok::Newline(_loc) => 0,
+        }
+    }
 }
 
 pub fn tokenize<'a>(input: &'a str) -> anyhow::Result<Vec<Tok<'a>>> {
@@ -60,14 +88,16 @@ pub fn tokenize<'a>(input: &'a str) -> anyhow::Result<Vec<Tok<'a>>> {
     for line in input.lines() {
         let leading_spaces = leading_spaces(line.as_bytes());
         let s = &line[..leading_spaces];
-        if leading_spaces > (indent_level * spaces_per_indent_level) as usize {
-            let amount = leading_spaces - (indent_level * spaces_per_indent_level) as usize;
-            toks.push(Tok::Indent(Loc::default(), s, amount));
-            indent_level += 1;
-        } else if leading_spaces < (indent_level * spaces_per_indent_level) as usize {
-            let amount = (indent_level as isize * (spaces_per_indent_level - leading_spaces as isize)) as usize;
-            toks.push(Tok::Dedent(Loc::default(), s, amount));
-            indent_level -= 1;
+        if leading_spaces > 0 {
+            if leading_spaces > (indent_level * spaces_per_indent_level) as usize {
+                let amount = leading_spaces - (indent_level * spaces_per_indent_level) as usize;
+                toks.push(Tok::Indent(Loc::default(), s, amount));
+                indent_level += 1;
+            } else if leading_spaces < (indent_level * spaces_per_indent_level) as usize {
+                let amount = (indent_level as isize * (spaces_per_indent_level - leading_spaces as isize)) as usize;
+                toks.push(Tok::Dedent(Loc::default(), s, amount));
+                indent_level -= 1;
+            }
         }
 //        println!("{line}");
         let line = &line[leading_spaces as usize..];
@@ -82,13 +112,19 @@ pub fn tokenize<'a>(input: &'a str) -> anyhow::Result<Vec<Tok<'a>>> {
         toks.push(Tok::Dedent(Loc::default(), end_of_file, 0));
     }
 
-    /*
-    for (lineno, line) in input.lines().enumerate() {
-        for (col, ch) in line.as_chars().enumerate() {
+    for tok in &mut toks {
+        let pos = tok.pos();
+        let loc = tok.loc_mut();
 
+        for (lineno, line) in input.lines().enumerate() {
+            let line_ptr = line.as_ptr() as usize;
+            for col in 0..line.len() {
+                if pos == line_ptr + col {
+                    *loc = Loc::new(lineno, col);
+                }
+            }
         }
     }
-    */
 
     Ok(toks)
 }

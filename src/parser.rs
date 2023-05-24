@@ -99,6 +99,11 @@ fn consume_newline<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], (
     }
 }
 
+fn consume_newlines<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], (), ParseErr> {
+    let (input, _) = many1(consume_newline)(input)?;
+    Ok((input, ()))
+}
+
 fn tok_version<'a, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], (usize, usize, usize), ParseErr> {
     let (input, Tok::Version(_loc, maj, min, pat)) = tok(input)? else {
         return Err(nom::Err::Failure(ParseErr::new(format!("Expected version"))));
@@ -250,6 +255,12 @@ fn parse_port<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], Port, 
     Ok((input, port))
 }
 
+fn parse_statement<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], Statement, ParseErr> {
+    alt((
+        value(Statement::Skip, consume_keyword("skip")),
+    ))(input)
+}
+
 fn parse_module<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], ModDef, ParseErr> {
     let (input, _) = consume_keyword("module")(input)?;
     let (input, id) = consume_id(input)?;
@@ -258,13 +269,24 @@ fn parse_module<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], ModD
     let (input, _) = consume_newline(input)?;
     let (input, _) = consume_indent(input)?;
 
-    let Ok((input, ports)) = many0(
+    let (input, ports) = match many0(
         map(
-            pair(parse_port, consume_newline),
+            pair(parse_port, consume_newlines),
             |(port, _)| port,
         )
-    )(input) else {
-        return Err(nom::Err::Failure(ParseErr::new(format!("Expected ports"))));
+    )(input) {
+        Ok((input, ports)) => (input, ports),
+        Err(e) => return Err(e),
+    };
+
+    let (input, statements) = match many0(
+        map(
+            pair(parse_statement, consume_newlines),
+            |(stmt, _)| stmt,
+        )
+    )(input) {
+        Ok((input, ports)) => (input, ports),
+        Err(e) => return Err(e),
     };
 
     let (input, _) = consume_dedent(input)?;
