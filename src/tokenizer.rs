@@ -11,7 +11,7 @@ pub enum Tok<'a> {
     Indent(&'a str, usize),
     Dedent(&'a str, usize),
     Version(usize, usize, usize),
-    Ident(&'a str),
+    Id(&'a str),
     Lit(u64),
     LitStr(&'a str),
     Info(&'a str),
@@ -143,7 +143,7 @@ fn parse_token_ident<'a>(input: &'a str) -> IResult<&str, Tok<'a>, ()> {
     let (input, _head_char) = satisfy(|ch| ch.is_alphabetic() || ch == '_')(input)?;
     let (input, tail_chars) = many0(satisfy(|ch| ch.is_alphanumeric() || ch == '_'))(input)?;
     let len = 1 + tail_chars.len();
-    let token = Tok::Ident(&orig_input[..len]);
+    let token = Tok::Id(&orig_input[..len]);
     Ok((input, token))
 }
 

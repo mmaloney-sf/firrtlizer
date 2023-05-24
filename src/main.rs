@@ -1,6 +1,6 @@
 use firrtlizer::tokenizer::Tok;
 use firrtlizer::tokenizer::tokenize;
-//use firrtlizer::parser::parse;
+use firrtlizer::parser::parse;
 
 fn main() {
     let argv: Vec<String> = std::env::args().collect();
@@ -10,8 +10,8 @@ fn main() {
 
     let toks = tokenize(&input).unwrap();
     print_toks(&toks);
-//    let circuit = parse(&toks).unwrap();
-//    dbg!(circuit);
+    let circuit = parse(&toks).unwrap();
+    dbg!(circuit);
 }
 
 fn print_toks(toks: &[Tok]) {
