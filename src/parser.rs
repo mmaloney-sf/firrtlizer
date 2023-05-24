@@ -48,16 +48,24 @@ fn tok<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], &'b Tok<'a>, 
     }
 }
 
-fn consume_keyword<'a: 'b, 'b>(keyword: &str) -> impl Fn(&'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], (), ParseErr> + '_ {
+fn consume_keyword<'a: 'b, 'b>(keyword: &'static str) -> impl Fn(&'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], &'a str, ParseErr> + '_ {
     move |input| {
         let (input, tok) = tok(input)?;
         if let Tok::Id(keyword0) = tok {
             if keyword == *keyword0 {
-                return Ok((input, ()));
+                return Ok((input, keyword));
             }
         }
         Err(nom::Err::Error(ParseErr::new(format!("Unexpected token: {tok:?} expected: {keyword:?}"))))
     }
+}
+
+fn consume_lit<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], u64, ParseErr> {
+    let (input, tok) = tok(input)?;
+    if let Tok::Lit(v) = tok {
+        return Ok((input, *v));
+    }
+    Err(nom::Err::Error(ParseErr::new(format!("Bad thing"))))
 }
 
 fn consume_id<'a, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], &'a str, ParseErr> {
@@ -124,91 +132,12 @@ fn consume_dedent<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], ()
 }
 
 /*
-fn indent_tok(input: &[Tok<'a>]) -> IResult<&[Tok<'a>], (), Error> {
-    let (input, tok) = tok(input)?;
-    if let Tok::Indent(_amount) = tok {
-        Ok((input, ()))
-    } else {
-        Err(nom::Err::Failure(Error::new(format!("Unexpected token: {tok:?} expected: Indent"))))
-    }
-}
-*/
-
-/*
 fn flip_tok(input: &[Tok<'a>]) -> IResult<&[Tok<'a>], Flippedness, Error> {
     let (input, ok) = opt(expect_tok(Tok::Flip))(input)?;
     match ok {
         Some(()) => Ok((input, Flippedness::Flipped)),
         None => Ok((input, Flippedness::Aligned)),
     }
-}
-
-/*
-    let run = move |input: &'b [Tok<'a>]| -> IResult<&'b [Tok<'a>], Tok, Error> {
-        if input.len() == 0 {
-            Err(nom::Err::Error(Error::new("Unexpected EOF".to_string())))
-        } else {
-            let head = &input[0];
-            let tail = &input[1..];
-            if head == &expected_tok {
-                Ok((tail, head.clone()))
-            } else {
-                Err(nom::Err::Error(Error::new(format!("Unexpected token: {head:?} expected: {expected_tok:?}"))))
-            }
-        }
-    };
-    run
-}
-*/
-
-fn tok_lit<'a, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], u64, Error> {
-    if input.len() == 0 {
-        Err(nom::Err::Error(Error::new("Unexpected EOF".to_string())))
-    } else {
-        let head = &input[0];
-        let tail = &input[1..];
-        if let Tok::Lit(v) = head {
-            Ok((tail, *v))
-        } else {
-            Err(nom::Err::Error(Error::new(format!("Unexpected token: {head:?} (expected lit)"))))
-        }
-    }
-}
-
-fn parse_type(input: &[Tok<'a>]) -> IResult<&[Tok<'a>], Type, Error> {
-//    let (input, constness) = opt(tok(Tok::Const))(input)?; // todo!() only for ground and aggregates
-    let (input, typ) = alt((
-        parse_type_ground,
-        parse_type_aggregate,
-    ))(input)?;
-    Ok((input, typ))
-}
-
-fn parse_type_ground(input: &[Tok<'a>]) -> IResult<&[Tok<'a>], Type, Error> {
-    if let Ok((input, typ)) = alt((
-        value(Type::Clock, expect_tok(Tok::Clock)),
-        value(Type::Reset, expect_tok(Tok::Reset)),
-        value(Type::AsyncReset, expect_tok(Tok::AsyncReset)),
-    ))(input) {
-        return Ok((input, typ));
-    }
-
-    let (input, tok) = alt((
-            value(Tok::UInt, expect_tok(Tok::UInt)),
-            value(Tok::SInt, expect_tok(Tok::SInt)),
-            value(Tok::Analog, expect_tok(Tok::Analog)),
-    ))(input)?;
-
-    let (input, size) = opt(tok_lit)(input)?;
-
-    let typ = match tok {
-        Tok::UInt => Type::UInt(size),
-        Tok::SInt => Type::SInt(size),
-//        Tok::Analog => Type::Analog(size),
-        _ => unreachable!(),
-    };
-
-    Ok((input, typ))
 }
 
 fn parse_type_aggregate(input: &[Tok<'a>]) -> IResult<&[Tok<'a>], Type, Error> {
@@ -244,13 +173,55 @@ fn parse_extmodule(input: &[Tok<'a>]) -> IResult<&[Tok<'a>], Tok, Error> { todo!
 fn parse_intmodule(input: &[Tok<'a>]) -> IResult<&[Tok<'a>], Tok, Error> { todo!() }
 */
 
+fn parse_type<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], Type, ParseErr> {
+//    let (input, constness) = opt(tok(Tok::Const))(input)?; // todo!() only for ground and aggregates
+    let (input, typ) = alt((
+        parse_type_ground,
+//        parse_type_aggregate,
+    ))(input)?;
+    Ok((input, typ))
+}
+
+fn parse_type_ground<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], Type, ParseErr> {
+    if let Ok((input, typ)) = alt((
+        value(Type::Clock, consume_keyword("Clock")),
+        value(Type::Reset, consume_keyword("Reset")),
+        value(Type::AsyncReset, consume_keyword("AsyncReset")),
+    ))(input) {
+        return Ok((input, typ));
+    }
+
+    let (input, typ_name) = alt((
+            consume_keyword("UInt"),
+            consume_keyword("SInt"),
+//            consume_keyword("Analog"),
+    ))(input)?;
+
+    let (input, width) = opt(parse_width)(input)?;
+
+    let typ = match typ_name {
+        "UInt" => Type::UInt(width),
+        "SInt" => Type::SInt(width),
+        //"Analog" => Type::Analog(width),
+        _ => unreachable!(),
+    };
+
+    Ok((input, typ))
+}
+
+fn parse_width<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], u64, ParseErr> {
+    let (input, _) = consume_punc("<")(input)?;
+    let (input, v) = consume_lit(input)?;
+    let (input, _) = consume_punc(">")(input)?;
+    Ok((input, v))
+}
+
 fn parse_direction<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], Direction, ParseErr> {
     alt((
         value(Direction::Input, consume_keyword("input")),
         value(Direction::Output, consume_keyword("output")),
     ))(input)
 }
-
 
 fn parse_port<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], Port, ParseErr> {
     let (input, direction) = parse_direction(input)?;
@@ -260,13 +231,12 @@ fn parse_port<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], Port, 
     };
     let name = name.to_string();
     let (input, _) = consume_punc(":")(input)?;
-    let (input, typ) = consume_id(input)?;
-    //let (input, typ) = parse_type(input)?;
+    let (input, typ) = parse_type(input)?;
     let (input, info) = try_consume_info(input)?;
     let port = Port {
         name,
         direction,
-        typ: Type::Clock,
+        typ,
     };
     Ok((input, port))
 }
