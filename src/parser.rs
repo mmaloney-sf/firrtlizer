@@ -51,7 +51,7 @@ fn tok<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], &'b Tok<'a>, 
 fn consume_keyword<'a: 'b, 'b>(keyword: &'static str) -> impl Fn(&'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], &'a str, ParseErr> + '_ {
     move |input| {
         let (input, tok) = tok(input)?;
-        if let Tok::Id(keyword0) = tok {
+        if let Tok::Id(loc, keyword0) = tok {
             if keyword == *keyword0 {
                 return Ok((input, keyword));
             }
@@ -62,14 +62,14 @@ fn consume_keyword<'a: 'b, 'b>(keyword: &'static str) -> impl Fn(&'b [Tok<'a>]) 
 
 fn consume_lit<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], u64, ParseErr> {
     let (input, tok) = tok(input)?;
-    if let Tok::Lit(v) = tok {
+    if let Tok::Lit(loc, v) = tok {
         return Ok((input, *v));
     }
     Err(nom::Err::Error(ParseErr::new(format!("Bad thing"))))
 }
 
 fn consume_id<'a, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], &'a str, ParseErr> {
-    if let Ok((input, Tok::Id(id))) = tok(input) {
+    if let Ok((input, Tok::Id(loc, id))) = tok(input) {
         Ok((input, id))
     } else {
         Err(nom::Err::Error(ParseErr::new(format!("Expected identifier"))))
@@ -79,7 +79,7 @@ fn consume_id<'a, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], &'a str, P
 fn consume_punc<'a: 'b, 'b>(punc: &str) -> impl Fn(&'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], (), ParseErr> + '_ {
     move |input| {
         let (input, tok) = tok(input)?;
-        if let Tok::Punc(punc0) = tok {
+        if let Tok::Punc(loc, punc0) = tok {
             if punc == *punc0 {
                 Ok((input, ()))
             } else {
@@ -92,7 +92,7 @@ fn consume_punc<'a: 'b, 'b>(punc: &str) -> impl Fn(&'b [Tok<'a>]) -> IResult<&'b
 }
 
 fn consume_newline<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], (), ParseErr> {
-    if let Ok((input, Tok::Newline)) = tok(input) {
+    if let Ok((input, Tok::Newline(_loc))) = tok(input) {
         Ok((input, ()))
     } else {
         Err(nom::Err::Error(ParseErr::new(format!("Expected newline"))))
@@ -100,14 +100,14 @@ fn consume_newline<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], (
 }
 
 fn tok_version<'a, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], (usize, usize, usize), ParseErr> {
-    let (input, Tok::Version(maj, min, pat)) = tok(input)? else {
+    let (input, Tok::Version(_loc, maj, min, pat)) = tok(input)? else {
         return Err(nom::Err::Failure(ParseErr::new(format!("Expected version"))));
     };
     Ok((input, (*maj, *min, *pat)))
 }
 
 fn try_consume_info<'a, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], Option<&'a str>, ParseErr> {
-    let (input, Tok::Info(info)) = tok(input)? else {
+    let (input, Tok::Info(_loc, info)) = tok(input)? else {
         return Ok((input, None));
     };
     Ok((input, Some(info)))
@@ -115,7 +115,7 @@ fn try_consume_info<'a, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], Opti
 
 fn consume_indent<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], (), ParseErr> {
     let (input, tok) = tok(input)?;
-    if let Tok::Indent(_, _amount) = tok {
+    if let Tok::Indent(_loc, _, _amount) = tok {
         Ok((input, ()))
     } else {
         Err(nom::Err::Failure(ParseErr::new(format!("Expected indent, but found {tok:?}"))))
@@ -124,7 +124,7 @@ fn consume_indent<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], ()
 
 fn consume_dedent<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], (), ParseErr> {
     let (input, tok) = tok(input)?;
-    if let Tok::Dedent(_, _amount) = tok {
+    if let Tok::Dedent(_loc, _, _amount) = tok {
         Ok((input, ()))
     } else {
         Err(nom::Err::Failure(ParseErr::new(format!("Expected dedent, but found {tok:?}"))))

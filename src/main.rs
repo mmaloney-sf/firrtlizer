@@ -17,7 +17,7 @@ fn main() {
 fn print_toks(toks: &[Tok]) {
     for tok in toks {
         print!("{tok:?} ");
-        if *tok == Tok::Newline {
+        if let Tok::Newline(_loc) = tok {
             println!();
         }
     }
