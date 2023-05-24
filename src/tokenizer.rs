@@ -11,8 +11,8 @@ pub enum Tok {
     UInt,
     SInt,
     Analog,
-    Indent,
-    Dedent,
+    Indent(usize),
+    Dedent(usize),
     Newline,
     Colon,
     Input,
@@ -58,10 +58,12 @@ pub fn tokenize(input: &str) -> anyhow::Result<Vec<Tok>> {
     for line in input.lines() {
         let leading_spaces = leading_spaces(line.as_bytes()) as isize;
         if leading_spaces > indent_level * spaces_per_indent_level {
-            toks.push(Tok::Indent);
+            let amount = leading_spaces - indent_level * spaces_per_indent_level;
+            toks.push(Tok::Indent(amount as usize));
             indent_level += 1;
         } else if leading_spaces < indent_level * spaces_per_indent_level {
-            toks.push(Tok::Dedent);
+            let amount = indent_level * spaces_per_indent_level - leading_spaces;
+            toks.push(Tok::Dedent(amount as usize));
             indent_level -= 1;
         }
 //        println!("{line}");
@@ -73,7 +75,7 @@ pub fn tokenize(input: &str) -> anyhow::Result<Vec<Tok>> {
         toks.push(Tok::Newline);
     }
     for _ in 0..indent_level {
-        toks.push(Tok::Dedent);
+        toks.push(Tok::Dedent(0));
     }
     Ok(toks)
 }
