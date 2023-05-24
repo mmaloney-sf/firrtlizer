@@ -1,6 +1,6 @@
 use firrtlizer::tokenizer::Tok;
 use firrtlizer::tokenizer::tokenize;
-use firrtlizer::parser::parse;
+//use firrtlizer::parser::parse;
 
 fn main() {
     let argv: Vec<String> = std::env::args().collect();

@@ -7,67 +7,37 @@ use nom::character::complete::{space0, space1, satisfy};
 use nom::sequence::pair;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub enum Tok {
-    UInt,
-    SInt,
-    Analog,
-    Indent(usize),
-    Dedent(usize),
-    Newline,
-    Colon,
-    Input,
-    Output,
-    Flip,
-    EqEq,
-    Eq,
+pub enum Tok<'a> {
+    Indent(&'a str, usize),
+    Dedent(&'a str, usize),
     Version(usize, usize, usize),
-    Ident(String),
+    Ident(&'a str),
     Lit(u64),
-    LitStr(String),
-    Info(String),
-    Const,
-    Circuit,
-    Module,
-    Clock,
-    Reset,
-    AsyncReset,
-    Wire,
-    Node,
-    Reg,
-    Mem,
-    Inst,
-    RevFatArrow,
-    Dot,
-    Comma,
-    Mod,
-    LSquare,
-    RSquare,
-    LParen,
-    RParen,
-    LBrace,
-    RBrace,
-    LAngle,
-    RAngle,
+    LitStr(&'a str),
+    Info(&'a str),
+    Punc(&'a str),
+    Newline,
 }
 
-pub fn tokenize(input: &str) -> anyhow::Result<Vec<Tok>> {
+pub fn tokenize<'a>(input: &'a str) -> anyhow::Result<Vec<Tok<'a>>> {
     let mut indent_level: isize = 0;
     let spaces_per_indent_level: isize = 2;
 
     let mut toks = vec![];
     for line in input.lines() {
-        let leading_spaces = leading_spaces(line.as_bytes()) as isize;
-        if leading_spaces > indent_level * spaces_per_indent_level {
-            let amount = leading_spaces - indent_level * spaces_per_indent_level;
-            toks.push(Tok::Indent(amount as usize));
+        let leading_spaces = leading_spaces(line.as_bytes());
+        let s = &line[..leading_spaces];
+        if leading_spaces > (indent_level * spaces_per_indent_level) as usize {
+            let amount = leading_spaces - (indent_level * spaces_per_indent_level) as usize;
+            toks.push(Tok::Indent(s, amount));
             indent_level += 1;
-        } else if leading_spaces < indent_level * spaces_per_indent_level {
-            let amount = indent_level * spaces_per_indent_level - leading_spaces;
-            toks.push(Tok::Dedent(amount as usize));
+        } else if leading_spaces < (indent_level * spaces_per_indent_level) as usize {
+            let amount = (indent_level as isize * (spaces_per_indent_level - leading_spaces as isize)) as usize;
+            toks.push(Tok::Dedent(s, amount));
             indent_level -= 1;
         }
 //        println!("{line}");
-        let line = String::from_utf8((&line.as_bytes()[leading_spaces as usize..]).to_vec()).unwrap();
+        let line = &line[leading_spaces as usize..];
         let (_, line_toks) = tokenize_line(&line)?;
         for tok in line_toks {
             toks.push(tok);
@@ -75,7 +45,8 @@ pub fn tokenize(input: &str) -> anyhow::Result<Vec<Tok>> {
         toks.push(Tok::Newline);
     }
     for _ in 0..indent_level {
-        toks.push(Tok::Dedent(0));
+        let end_of_file: &str = &input[input.len()..];
+        toks.push(Tok::Dedent(end_of_file, 0));
     }
     Ok(toks)
 }
@@ -92,7 +63,7 @@ fn leading_spaces(line: &[u8]) -> usize {
     i
 }
 
-fn tokenize_line(input: &str) -> IResult<&str, Vec<Tok>, ()> {
+fn tokenize_line<'a>(input: &'a str) -> IResult<&str, Vec<Tok<'a>>, ()> {
     let mut rest = input;
     let mut toks = vec![];
     loop {
@@ -107,17 +78,15 @@ fn tokenize_line(input: &str) -> IResult<&str, Vec<Tok>, ()> {
     }
 }
 
-fn parse_token(input: &str) -> IResult<&str, Tok, ()> {
+fn parse_token<'a>(input: &'a str) -> IResult<&str, Tok<'a>, ()> {
     let (input, tok) = alt((
         parse_token_version,
-        parse_keyword,
-        value(Tok::Colon, tag(":")),
-        value(Tok::EqEq, tag("==")),
-        value(Tok::Eq, tag("=")),
-        value(Tok::RevFatArrow, tag("<=")),
-        value(Tok::Dot, tag(".")),
-        value(Tok::Comma, tag(",")),
-        parse_token_ground_type,
+        value(Tok::Punc(&input[..1]), tag("==")),
+        value(Tok::Punc(&input[..1]), tag("<=")),
+        value(Tok::Punc(&input[..1]), tag(":")),
+        value(Tok::Punc(&input[..1]), tag("=")),
+        value(Tok::Punc(&input[..1]), tag(".")),
+        value(Tok::Punc(&input[..1]), tag(",")),
         parse_token_lp,
         parse_token_lit_num,
         parse_token_lit_str,
@@ -128,46 +97,20 @@ fn parse_token(input: &str) -> IResult<&str, Tok, ()> {
     Ok((input, tok))
 }
 
-fn parse_token_ground_type(input: &str) -> IResult<&str, Tok, ()> {
+fn parse_token_lp<'a>(input: &'a str) -> IResult<&str, Tok<'a>, ()> {
     alt((
-        value(Tok::Clock, tag("Clock")),
-        value(Tok::Reset, tag("Reset")),
-        value(Tok::AsyncReset, tag("AsyncReset")),
+        value(Tok::Punc(&input[..1]), tag("<")),
+        value(Tok::Punc(&input[..1]), tag(">")),
+        value(Tok::Punc(&input[..1]), tag("(")),
+        value(Tok::Punc(&input[..1]), tag(")")),
+        value(Tok::Punc(&input[..1]), tag("[")),
+        value(Tok::Punc(&input[..1]), tag("]")),
+        value(Tok::Punc(&input[..1]), tag("{")),
+        value(Tok::Punc(&input[..1]), tag("}")),
     ))(input)
 }
 
-fn parse_keyword(input: &str) -> IResult<&str, Tok, ()> {
-    alt((
-        value(Tok::Circuit, tag("circuit")),
-        value(Tok::Module, tag("module")),
-        value(Tok::Input, tag("input")),
-        value(Tok::Output, tag("output")),
-        value(Tok::Const, tag("const")),
-        value(Tok::Wire, tag("wire")),
-        value(Tok::Node, tag("node")),
-        value(Tok::Reg, tag("reg")),
-        value(Tok::Mem, tag("mem")),
-        value(Tok::Flip, tag("flip")),
-        value(Tok::Flip, tag("UInt")),
-        value(Tok::Flip, tag("SInt")),
-        value(Tok::Flip, tag("Analog")),
-    ))(input)
-}
-
-fn parse_token_lp(input: &str) -> IResult<&str, Tok, ()> {
-    alt((
-        value(Tok::LAngle, tag("<")),
-        value(Tok::RAngle, tag(">")),
-        value(Tok::LParen, tag("(")),
-        value(Tok::RParen, tag(")")),
-        value(Tok::LSquare, tag("[")),
-        value(Tok::RSquare, tag("]")),
-        value(Tok::LBrace, tag("{")),
-        value(Tok::RBrace, tag("}")),
-    ))(input)
-}
-
-fn parse_token_version(input: &str) -> IResult<&str, Tok, ()> {
+fn parse_token_version<'a>(input: &'a str) -> IResult<&str, Tok<'a>, ()> {
     let (input, _) = tag("FIRRTL")(input)?;
     let (input, _) = space1(input)?;
     let (input, _) = tag("version")(input)?;
@@ -186,35 +129,40 @@ fn parse_token_version(input: &str) -> IResult<&str, Tok, ()> {
 //version = "FIRRTL" , "version" , sem_ver ;
 
 
-fn parse_token_info(input: &str) -> IResult<&str, Tok, ()> {
+fn parse_token_info<'a>(input: &'a str) -> IResult<&str, Tok<'a>, ()> {
+    let orig_input = input;
     let (input, _) = tag("@[")(input)?;
     let (input, contents) = many0(satisfy(|ch| ch != ']'))(input)?;
     let (input, _) = tag("]")(input)?;
-    Ok((input, Tok::Info(contents.into_iter().collect::<String>())))
+    let len = contents.len() + 3;
+    Ok((input, Tok::Info(&orig_input[..len])))
 }
 
-fn parse_token_ident(input: &str) -> IResult<&str, Tok, ()> {
-    let (input, head_char) = satisfy(|ch| ch.is_alphabetic() || ch == '_')(input)?;
+fn parse_token_ident<'a>(input: &'a str) -> IResult<&str, Tok<'a>, ()> {
+    let orig_input = &input;
+    let (input, _head_char) = satisfy(|ch| ch.is_alphabetic() || ch == '_')(input)?;
     let (input, tail_chars) = many0(satisfy(|ch| ch.is_alphanumeric() || ch == '_'))(input)?;
-    let mut result = String::new();
-    result.push(head_char);
-    result.push_str(&tail_chars.into_iter().collect::<String>());
-    let token = Tok::Ident(result);
+    let len = 1 + tail_chars.len();
+    let token = Tok::Ident(&orig_input[..len]);
     Ok((input, token))
 }
 
-fn parse_token_lit_num(input: &str) -> IResult<&str, Tok, ()> {
+fn parse_token_lit_num<'a>(input: &'a str) -> IResult<&str, Tok<'a>, ()> {
+    let orig_input = &input;
     let (input, number) = many1(satisfy(|ch| ch.is_numeric()))(input)?;
-    let number = number.into_iter().collect::<String>();
-    let token = Tok::Lit(number.parse().unwrap());
+    let len = number.len();
+    let number_str = &orig_input[..len];
+    let token = Tok::Lit(number_str.parse().unwrap());
     Ok((input, token))
 }
 
-fn parse_token_lit_str(input: &str) -> IResult<&str, Tok, ()> {
+fn parse_token_lit_str<'a>(input: &'a str) -> IResult<&str, Tok<'a>, ()> {
+    let orig_input = &input;
     let (input, _) = tag("\"")(input)?;
     let (input, contents) = many0(parse_token_lit_content_char)(input)?;
     let (input, _) = tag("\"")(input)?;
-    let token = Tok::LitStr(contents.into_iter().collect::<String>());
+    let len = contents.len() + 2;
+    let token = Tok::LitStr(&orig_input[..len]);
     Ok((input, token))
 }
 

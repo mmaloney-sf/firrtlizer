@@ -1,4 +1,4 @@
-pub mod parser;
+//pub mod parser;
 pub mod tokenizer;
 pub mod typecheck;
 pub mod ast;
