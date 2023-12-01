@@ -4,7 +4,7 @@ mod expr;
 use nom::IResult;
 use nom::combinator::{value, eof, opt, map};
 use nom::branch::alt;
-use nom::multi::{many0, many1};
+use nom::multi::{many0, many1, separated_list0};
 use nom::sequence::pair;
 use nom::error::ParseError;
 
@@ -54,7 +54,7 @@ fn tok<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], &'b Tok<'a>, 
 fn consume_keyword<'a: 'b, 'b>(keyword: &'static str) -> impl Fn(&'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], &'a str, ParseErr> + '_ {
     move |input| {
         let (input, tok) = tok(input)?;
-        if let Tok::Id(loc, keyword0) = tok {
+        if let Tok::Id(keyword0) = tok {
             if keyword == *keyword0 {
                 return Ok((input, keyword));
             }
@@ -65,14 +65,14 @@ fn consume_keyword<'a: 'b, 'b>(keyword: &'static str) -> impl Fn(&'b [Tok<'a>]) 
 
 fn consume_lit<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], u64, ParseErr> {
     let (input, tok) = tok(input)?;
-    if let Tok::Lit(loc, v) = tok {
+    if let Tok::Lit(v) = tok {
         return Ok((input, *v));
     }
     Err(nom::Err::Error(ParseErr::new(format!("Bad thing"))))
 }
 
 fn consume_id<'a, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], &'a str, ParseErr> {
-    if let Ok((input, Tok::Id(loc, id))) = tok(input) {
+    if let Ok((input, Tok::Id(id))) = tok(input) {
         Ok((input, id))
     } else {
         Err(nom::Err::Error(ParseErr::new(format!("Expected identifier"))))
@@ -82,7 +82,7 @@ fn consume_id<'a, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], &'a str, P
 fn consume_punc<'a: 'b, 'b>(punc: &str) -> impl Fn(&'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], (), ParseErr> + '_ {
     move |input| {
         let (input, tok) = tok(input)?;
-        if let Tok::Punc(loc, punc0) = tok {
+        if let Tok::Punc(punc0) = tok {
             if punc == *punc0 {
                 Ok((input, ()))
             } else {
@@ -95,7 +95,7 @@ fn consume_punc<'a: 'b, 'b>(punc: &str) -> impl Fn(&'b [Tok<'a>]) -> IResult<&'b
 }
 
 fn consume_newline<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], (), ParseErr> {
-    if let Ok((input, Tok::Newline(_loc))) = tok(input) {
+    if let Ok((input, Tok::Newline)) = tok(input) {
         Ok((input, ()))
     } else {
         Err(nom::Err::Error(ParseErr::new(format!("Expected newline"))))
@@ -108,14 +108,14 @@ fn consume_newlines<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], 
 }
 
 fn tok_version<'a, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], (usize, usize, usize), ParseErr> {
-    let (input, Tok::Version(_loc, maj, min, pat)) = tok(input)? else {
+    let (input, Tok::Version(maj, min, pat)) = tok(input)? else {
         return Err(nom::Err::Failure(ParseErr::new(format!("Expected version"))));
     };
     Ok((input, (*maj, *min, *pat)))
 }
 
 fn try_consume_info<'a, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], Option<&'a str>, ParseErr> {
-    let (input, Tok::Info(_loc, info)) = tok(input)? else {
+    let (input, Tok::Info(info)) = tok(input)? else {
         return Ok((input, None));
     };
     Ok((input, Some(info)))
@@ -123,7 +123,7 @@ fn try_consume_info<'a, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], Opti
 
 fn consume_indent<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], (), ParseErr> {
     let (input, tok) = tok(input)?;
-    if let Tok::Indent(_loc, _, _amount) = tok {
+    if let Tok::Indent(__, _amount) = tok {
         Ok((input, ()))
     } else {
         Err(nom::Err::Failure(ParseErr::new(format!("Expected indent, but found {tok:?}"))))
@@ -132,7 +132,7 @@ fn consume_indent<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], ()
 
 fn consume_dedent<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], (), ParseErr> {
     let (input, tok) = tok(input)?;
-    if let Tok::Dedent(_loc, _, _amount) = tok {
+    if let Tok::Dedent(__, _amount) = tok {
         Ok((input, ()))
     } else {
         Err(nom::Err::Failure(ParseErr::new(format!("Expected dedent, but found {tok:?}"))))
@@ -175,6 +175,14 @@ fn parse_type<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], Type, 
     }
 
     Ok((input, typ))
+}
+
+#[test]
+fn test_parse_type() {
+    let typ = "{ clock : Clock, reset : Reset}";
+    let toks: Vec<Tok> = crate::tokenizer::tokenize(typ).unwrap();
+    let toks = &toks[..toks.len()-1];
+    parse_type(toks).unwrap();
 }
 
 fn parse_vec_size<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], u64, ParseErr> {
@@ -220,7 +228,7 @@ fn parse_width<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], u64, 
 
 fn parse_type_bundle<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], Type, ParseErr> {
     let (input, _) = consume_punc("{")(input)?;
-    let (input, fields) = dbg!(many1(parse_field)(input))?;
+    let (input, fields) = separated_list0(consume_punc(","), parse_field)(input)?;
     let (input, _) = consume_punc("}")(input)?;
     let typ = Type::Bundle(fields);
     Ok((input, typ))
@@ -235,7 +243,6 @@ fn parse_flip<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], Flippe
 }
 
 fn parse_field<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], BundleField, ParseErr> {
-    println!("Parse field {input:?}");
     let (input, flip) = parse_flip(input)?;
     let (input, name) = consume_id(input)?;
     let (input, _) = consume_punc(":")(input)?;
@@ -297,6 +304,16 @@ fn parse_module<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], ModD
         Err(e) => return Err(e),
     };
 
+    let (input, statements) = match many0(
+        map(
+            pair(parse_statement, consume_newlines),
+            |(stmt, _)| stmt,
+        )
+    )(input) {
+        Ok((input, ports)) => (input, ports),
+        Err(e) => return Err(e),
+    };
+
     let (input, _) = consume_dedent(input)?;
 
     let moddef = ModDef {
@@ -307,7 +324,7 @@ fn parse_module<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], ModD
     Ok((input, moddef))
 }
 
-fn parse_decl<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], Decl, ParseErr> {
+pub fn parse_decl<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], Decl, ParseErr> {
     alt((
         map(parse_module, |m| Decl::Mod(m)),
     ))(input)
