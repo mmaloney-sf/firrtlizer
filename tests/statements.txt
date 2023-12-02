@@ -46,7 +46,6 @@ node refill_prot_x_hits_andMatrixOutputs_hi_lo_lo_95 = cat(refill_prot_x_hits_an
 node _refill_prot_w_hitAny_T_134 = eq(_refill_prot_w_hitAny_T_133, asSInt(UInt<1>(0h0)))
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_277830 = bits(rr_actMask, 73, 73)
 node _mergedSegEntActMaskVec_resMask_nfSelMask_uidSelMask_T_32216 = bits(rr_actMask, 65, 65)
-when _T_8341 :
 node _T_14884 = bits(_T_14883, 3, 0)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_396639 = bits(rr_actMask, 50, 50)
 node _mergedSegEntActMaskVec_resMask_nfSelMask_uidSelMask_T_75108 = bits(rr_actMask, 34, 34)
@@ -301,7 +300,6 @@ regreset brqMispredVec_r : UInt<1>, clock, reset, UInt<1>(0h0)
 node req_prot_cmo_hits_andMatrixOutputs_hi_lo_lo_116 = cat(req_prot_cmo_hits_andMatrixOutputs_andMatrixInput_7_238, req_prot_cmo_hits_andMatrixOutputs_andMatrixInput_8_238)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_371156 = bits(rr_actMask, 61, 61)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_344762 = bits(rr_actMask, 35, 35)
-when rdEnQual_F1_8 :
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_281449 = bits(rr_actMask, 106, 106)
 node _uops_formedPatterns_f_mapping_m_legal_T_27569 = eq(UInt<14>(0h200f), _uops_formedPatterns_f_mapping_m_legal_T_27568)
 node _io_perfDecode_REN_1_0_T_285 = bits(io.inst_REN[1].opc, 2, 2)
@@ -347,7 +345,6 @@ connect hits_26[11], UInt<1>(0h0)
 node _historyRewindRd_F0_check_T_118 = mux(_historyRewindRd_F0_check_T_111, _historyRewindRd_F0_check_T_114, _historyRewindRd_F0_check_T_117)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_291881 = bits(rr_actMask, 23, 23)
 node _searchPRVec_3_T_698 = shl(_searchPRVec_3_T_697, 1)
-when _T_6677 :
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_321219 = bits(rr_actMask, 123, 123)
 node _mergedSegEntActMaskVec_resMask_nfSelMask_uidSelMask_T_75844 = bits(rr_actMask, 127, 127)
 node _T_78114 = add(_T_77863, _T_78113)
@@ -706,7 +703,6 @@ node _g_T_2186 = shl(UInt<1>(0h1), 6)
 node _iexPipeSupport_3_T_331 = or(_iexPipeSupport_3_T_329, _iexPipeSupport_3_T_330)
 node _simpleUnitVecMask_resMask_nfSelMask_uidSelMask_T_22827 = bits(rr_vlMask, 121, 121)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_149140 = bits(rr_actMask, 32, 32)
-when _T_3620 :
 node refill_prot_x_hits_andMatrixOutputs_lo_hi_lo_39 = cat(refill_prot_x_hits_andMatrixOutputs_andMatrixInput_10_57, refill_prot_x_hits_andMatrixOutputs_andMatrixInput_11_56)
 node _mergedSegEntActMaskVec_resMask_nfSelMask_uidSelMask_T_89344 = bits(rr_actMask, 25, 25)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_293958 = bits(rr_actMask, 50, 50)
@@ -745,7 +741,6 @@ node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_324356 = bits(rr_actMa
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_64136 = bits(rr_actMask, 17, 17)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_365655 = bits(rr_actMask, 91, 91)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_160160 = bits(rr_actMask, 122, 122)
-when rdEn_F1_8 :
 node _formedPatterns_f_legal_T_678 = or(_formedPatterns_f_legal_T_677, _formedPatterns_f_legal_T_199)
 node refill_prot_a_hits_andMatrixOutputs_andMatrixInput_12_241 = bits(refill_prot_a_hits_invInputs_255, 31, 31)
 node _decSet_T_35 = bits(lsuCmplDecVec_1, 1, 1)
@@ -762,7 +757,6 @@ node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_365804 = bits(rr_actMa
 node _T_1516 = eq(_T_1515, UInt<1>(0h0))
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_197674 = bits(rr_actMask, 88, 88)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_89257 = bits(rr_actMask, 6, 6)
-else :
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_196992 = bits(rr_actMask, 62, 62)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_75951 = bits(rr_actMask, 35, 35)
 node refill_prot_x_hits_andMatrixOutputs_lo_lo_172 = cat(refill_prot_x_hits_andMatrixOutputs_lo_lo_hi_169, refill_prot_x_hits_andMatrixOutputs_andMatrixInput_13_124)
@@ -1177,8 +1171,6 @@ node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_313593 = bits(rr_actMa
 node _instTraceRead_RC_4_T_47 = or(_instTraceRead_RC_4_T_46, _instTraceRead_RC_4_T_28)
 wire _enqInputBits_WIRE_455 : UInt<1>
 node _T_71130 = bits(_T_71003, 126, 126)
-when _read_hpmevent_T_73 :
-when _T_2239 :
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_311136 = bits(rr_actMask, 47, 47)
 node _newCntPre_T_8479 = bits(decSet_110, 9, 9)
 node _mergedSegEntActMaskVec_resMask_nfSelMask_uidSelMask_T_99495 = bits(rr_actMask, 27, 27)
@@ -1365,7 +1357,6 @@ node _req_prot_pp_hitAny_T_184 = eq(_req_prot_pp_hitAny_T_183, asSInt(UInt<1>(0h
 node _mergedSegEntActMaskVec_resMask_nfSelMask_uidSelMask_T_45951 = bits(rr_actMask, 108, 108)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_382424 = bits(rr_actMask, 8, 8)
 node _lstr_stqVecByteOverlapIfPAMatchWithoutLsto_T_15 = or(_lstr_stqVecByteOverlapIfPAMatchWithoutLsto_T_14, io.stqVec_lstm[0].bits.cmdCboz)
-else :
 node _io_brqInstTrace_rdData_0_ret_T_12 = bits(_io_brqInstTrace_rdData_0_ret_WIRE_1, 48, 48)
 node _mergedSegEntActMaskVec_resMask_nfSelMask_uidSelMask_T_64607 = bits(rr_actMask, 118, 118)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_129759 = bits(rr_actMask, 77, 77)
@@ -1433,7 +1424,6 @@ node req_prot_cmo_hits_andMatrixOutputs_andMatrixInput_13_113 = bits(req_prot_cm
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_151331 = bits(rr_actMask, 32, 32)
 node _mergedSegEntActMaskVec_resMask_nfSelMask_uidSelMask_T_8192 = bits(rr_actMask, 106, 106)
 node refill_prot_r_hits_andMatrixOutputs_lo_lo_157 = cat(refill_prot_r_hits_andMatrixOutputs_lo_lo_hi_154, refill_prot_r_hits_andMatrixOutputs_andMatrixInput_13_115)
-when _T_2454 :
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_113270 = bits(rr_actMask, 46, 46)
 node _enqInputBits_T_2122 = mux(enqSel_8[1], io.enqReq[1].bits.predSrcTag.bits.tagID, UInt<1>(0h0))
 reg reducedEventTuples_eventBools_REG_397 : UInt<1>, clock
@@ -1642,10 +1632,8 @@ node _groupEnd_ID_3_T_28 = bits(imemResp_ID[3].bits.inst.funct7, 4, 4)
 regreset r_335 : UInt<10>, clock, reset, UInt<10>(0h0)
 node req_prot_r_hits_andMatrixOutputs_andMatrixInput_10_7 = bits(req_prot_r_hits_invInputs_11, 33, 33)
 node _mergedSegEntActMaskVec_resMask_nfSelMask_uidSelMask_T_4179 = bits(rr_actMask, 70, 70)
-when _T_75 :
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_86383 = bits(rr_actMask, 78, 78)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_187260 = bits(rr_actMask, 22, 22)
-when readyVecGrpEn_4 :
 node req_prot_cmo_hits_andMatrixOutputs_andMatrixInput_4_70 = bits(req_prot_cmo_hits_plaInput_74, 20, 20)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_251581 = bits(rr_actMask, 116, 116)
 node _uops_formedPatterns_f_mapping_m_legal_T_39310 = or(_uops_formedPatterns_f_mapping_m_legal_T_39309, _uops_formedPatterns_f_mapping_m_legal_T_37943)
@@ -1678,7 +1666,6 @@ wire pipe_out_6 : { valid : UInt<1>, bits : { prIdx : UInt<8>, arIdx : UInt<5>}}
 node _extVConfig_REN_T_69 = eq(_extVConfig_REN_T_68, UInt<1>(0h0))
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_403745 = bits(rr_actMask, 48, 48)
 node _mdpBufRdData_T_42 = mux(_mdpBufRdData_T_3, mdpBuf[3].ldGid, UInt<1>(0h0))
-when _T_1235 :
 node _iexPipeSupport_2_T_298 = and(_iexPipeSupport_2_T_293, _iexPipeSupport_2_T_297)
 node io_counters_4_inc_sets_hi_hi_lo_22 = cat(io_counters_4_inc_sets_hi_hi_lo_hi_18, io_counters_4_inc_sets_hi_hi_lo_lo_14)
 node req_cacheable_hits_andMatrixOutputs_andMatrixInput_0_12 = bits(req_cacheable_hits_invInputs_2, 6, 6)
@@ -1843,7 +1830,6 @@ node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_239801 = bits(rr_actMa
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_43609 = bits(rr_actMask, 16, 16)
 node _mergedSegEntActMaskVec_resMask_nfSelMask_uidSelMask_T_18784 = bits(rr_actMask, 107, 107)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_279274 = bits(rr_actMask, 109, 109)
-when enable_DIS[0] :
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_362438 = bits(rr_actMask, 83, 83)
 node formedPatterns_f_decoded_andMatrixOutputs_andMatrixInput_4_12 = bits(formedPatterns_f_decoded_plaInput, 31, 31)
 node _lsto_mergedSegFaultElemInfo_resElemInfo_nfSelElemInfo_uidSelElemInfo_nidSelElemInfo_T_2098 = bits(lsto_mergedSegFaultElemInfo_resElemInfo_nfSelElemInfo_uidSelElemInfo_nidOH_37, 2, 2)
@@ -2021,7 +2007,6 @@ node _T_2777 = cat(hi_148, lo_149)
 node _uops_formedPatterns_f_mapping_m_legal_T_3743 = or(_uops_formedPatterns_f_mapping_m_legal_T_3742, _uops_formedPatterns_f_mapping_m_legal_T_2577)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_55089 = bits(rr_actMask, 83, 83)
 node fflagsUpdateMultiple_110_lo = cat(fflagsUpdateMultiple_110_lo_hi, fflagsUpdateMultiple_110_lo_lo)
-when allocValid_F3 :
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_130211 = bits(rr_actMask, 17, 17)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_330585 = bits(rr_actMask, 9, 9)
 node _T_79418 = bits(_T_79417, 1, 0)
@@ -2206,7 +2191,6 @@ node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_319735 = bits(rr_actMa
 node _nVecDestsMuxed_T_341 = or(_nVecDestsMuxed_T_340, _nVecDestsMuxed_T_182)
 node _uops_formedPatterns_f_mapping_m_legal_T_30357 = eq(UInt<28>(0hc001057), _uops_formedPatterns_f_mapping_m_legal_T_30356)
 node lo_lo_lo_hi_hi_hi_hi_45 = cat(robVec.valid[19], robVec.valid[18])
-when _T_380 :
 node _refill_prot_a_hitAny_T_1633 = or(_refill_prot_a_hitAny_T_1632, _refill_prot_a_hitAny_T_824)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_100884 = bits(rr_actMask, 88, 88)
 node _simpleUnitVecMask_resMask_nfSelMask_uidSelMask_T_23396 = bits(rr_vlMask, 50, 50)
@@ -2222,7 +2206,6 @@ node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_16229 = bits(rr_actMas
 node _simpleUnitVecMask_resMask_nfSelMask_uidSelMask_T_22221 = bits(rr_vlMask, 30, 30)
 connect uops_formedPatterns_f_mapping_1_1.rs2, _uops_formedPatterns_f_mapping_m_res_T_41
 node io_counters_3_inc_sets_hi_lo_hi_hi_15 = cat(hits_27[17], hits_27[16])
-when _T_23168 :
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_125622 = bits(rr_actMask, 48, 48)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_226448 = bits(rr_actMask, 125, 125)
 node req_prot_x_hits_andMatrixOutputs_andMatrixInput_5_214 = bits(req_prot_x_hits_plaInput_218, 17, 17)
@@ -2241,7 +2224,6 @@ node refill_prot_a_hits_andMatrixOutputs_lo_lo_210 = cat(refill_prot_a_hits_andM
 node _T_3686 = add(_T_3459, _T_3460)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_320458 = bits(rr_actMask, 4, 4)
 connect _unProtLsuDispPacketBits_WIRE[3].groupNonDisp.vconfig.vtype.vsew, UInt<3>(0h0)
-when _T_4820 :
 node _uops_formedPatterns_f_legal_T_6920 = and(opcodes_3, UInt<29>(0h1c00707f))
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_276897 = bits(rr_actMask, 53, 53)
 connect entries_barrier_13.io.x.ppn, _entries_WIRE_69[0].ppn
@@ -2281,7 +2263,6 @@ node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_192148 = bits(rr_actMa
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_326694 = bits(rr_actMask, 90, 90)
 node req_prot_r_hits_andMatrixOutputs_hi_lo_27 = cat(req_prot_r_hits_andMatrixOutputs_hi_lo_hi_27, req_prot_r_hits_andMatrixOutputs_hi_lo_lo_9)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_415367 = bits(rr_actMask, 36, 36)
-when _brqMispredVec_T_95 :
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_408802 = bits(rr_actMask, 59, 59)
 node _refill_prot_eff_hitAny_T_1359 = eq(_refill_prot_eff_hitAny_T_1358, asSInt(UInt<1>(0h0)))
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_223743 = bits(rr_actMask, 112, 112)
@@ -2305,7 +2286,6 @@ node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_230800 = bits(rr_actMa
 node lstm_l1dcTagArrayReadOutCorrected_corrected_hammBadBitOH_shiftAmount = bits(lstm_l1dcTagArrayReadOutCorrected_corrected_syndromeUInt, 5, 0)
 node _T_51154 = add(_T_50861, _T_50862)
 node _io_perfDecode_REN_1_2_T_128 = eq(_io_perfDecode_REN_1_2_T_127, UInt<1>(0h0))
-when _T_23927 :
 node _mergedSegEntActMaskVec_resMask_nfSelMask_uidSelMask_T_6593 = bits(rr_actMask, 46, 46)
 node _T_12571 = or(io.lsuBpWatchReq_WB[0].valid, io.lsuBpWatchReq_WB[1].valid)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_384796 = bits(rr_actMask, 70, 70)
@@ -2376,7 +2356,6 @@ node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_156201 = bits(rr_actMa
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_424550 = bits(rr_actMask, 110, 110)
 node _searchPRIdx_3_T_180 = not(_searchPRIdx_3_T_175)
 node decoded_addr_decoded_decoded_andMatrixOutputs_lo_216 = cat(decoded_addr_decoded_decoded_andMatrixOutputs_andMatrixInput_3_216, decoded_addr_decoded_decoded_andMatrixOutputs_andMatrixInput_4_197)
-when _T_3866 :
 connect hits_14[17], io.lsuPerfEvents.lstPipeVec[1].storeMmio
 node _mergedSegEntActMaskVec_resMask_nfSelMask_uidSelMask_T_113972 = bits(rr_actMask, 64, 64)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_56788 = bits(rr_actMask, 116, 116)
@@ -2730,7 +2709,6 @@ node _mergedSegEntActMaskVec_resMask_nfSelMask_uidSelMask_T_78367 = bits(rr_actM
 node _mergedSegEntActMaskVec_resMask_nfSelMask_uidSelMask_T_80143 = bits(rr_actMask, 24, 24)
 node refill_prot_a_hits_andMatrixOutputs_hi_hi_210 = cat(refill_prot_a_hits_andMatrixOutputs_hi_hi_hi_210, refill_prot_a_hits_andMatrixOutputs_hi_hi_lo_201)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_296062 = bits(rr_actMask, 104, 104)
-when _hit_out_T_404 :
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_142485 = bits(rr_actMask, 69, 69)
 node _T_2989 = bits(_T_2900, 88, 88)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_353745 = bits(rr_actMask, 5, 5)
@@ -2775,7 +2753,6 @@ node lo_hi_hi_lo_hi_lo_78 = cat(robVec.valid[66], robVec.valid[65])
 wire req_prot_a_hits_plaOutput_26 : UInt<1>
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_129018 = bits(rr_actMask, 107, 107)
 node lstm_mshrVecNewerWithoutLsto_shiftAmount_874 = bits(io.ldqVec_lstm[10].bits.mshrNdx, 4, 0)
-when io.flush_icache :
 node _T_72048 = bits(_T_71969, 78, 78)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_110545 = bits(rr_actMask, 13, 13)
 node _newCntPre_T_7000 = add(_newCntPre_T_6993, _newCntPre_T_6999)
@@ -2856,7 +2833,6 @@ node _instTraceRead_RC_4_T_44 = or(_instTraceRead_RC_4_T_43, _instTraceRead_RC_4
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_78618 = bits(rr_actMask, 12, 12)
 node _stq_midValidWithLsto_T_2 = bits(_stq_midValidWithLsto_T_1, 31, 0)
 node _uops_formedPatterns_f_mapping_m_legal_T_17757 = eq(UInt<31>(0h48019057), _uops_formedPatterns_f_mapping_m_legal_T_17756)
-when set_fs_dirty :
 node _iexPipeSupport_1_T_644 = and(_iexPipeSupport_1_T_642, _iexPipeSupport_1_T_643)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_67345 = bits(rr_actMask, 24, 24)
 node _T_7126 = or(io.lsuBpWatchReq_WB[0].valid, io.lsuBpWatchReq_WB[1].valid)
@@ -3161,7 +3137,6 @@ node _mergedSegEntActMaskVec_resMask_nfSelMask_uidSelMask_T_52240 = bits(rr_actM
 node _icDataBaseErr_F3_T_3 = or(_icDataBaseErr_F3_T_2, icDataRdBankErrVec_F3_4)
 node _any_T_395 = or(_any_T_394, _any_T_332)
 node _lstm_mshrVecNewerWithoutLsto_T_1802 = bits(_lstm_mshrVecNewerWithoutLsto_T_1801, 4, 4)
-when _T_4904 :
 connect req_prot_w_hits_plaInput_272, _req_prot_w_hits_T_272
 node _T_51167 = bits(_T_51166, 2, 0)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_187806 = bits(rr_actMask, 53, 53)
@@ -3346,7 +3321,6 @@ node searchPRIdx_1_dataRight_dataRight_dataLeft_dataRight_selLeft = or(_searchPR
 node _searchPRIdx_2_dataLeft_selLeft_T_36 = or(_searchPRIdx_2_dataLeft_selLeft_T_35, _searchPRIdx_2_T_37)
 node _simpleUnitVecMask_resMask_nfSelMask_uidSelMask_T_2375 = bits(rr_vlMask, 68, 68)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_12374 = bits(rr_actMask, 73, 73)
-when _T_5108 :
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_285052 = bits(rr_actMask, 121, 121)
 connect req_prot_r_hits_137, req_prot_r_hits_plaOutput_137
 node _mergedSegEntActMaskVec_resMask_nfSelMask_uidSelMask_T_64702 = bits(rr_actMask, 85, 85)
@@ -3563,7 +3537,6 @@ node uops_formedPatterns_f_mapping_m_decoded_orMatrixOutputs_hi_21 = cat(uops_fo
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_416014 = bits(rr_actMask, 37, 37)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_118603 = bits(rr_actMask, 105, 105)
 node _elementInfo_mergedSegInfo_resElemInfo_nfSelElemInfo_uidSelElemInfo_nidSelElemInfo_T_1113 = bits(elementInfo_mergedSegInfo_resElemInfo_nfSelElemInfo_uidSelElemInfo_nidOH_13, 3, 3)
-when fetchTagBankEn_F2_2 :
 node _mergedSegEntActMaskVec_resMask_nfSelMask_uidSelMask_T_69446 = bits(rr_actMask, 60, 60)
 node _lstm_mshrVecNewerWithoutLsto_T_4765 = and(_lstm_mshrVecNewerWithoutLsto_T_4761, _lstm_mshrVecNewerWithoutLsto_T_4764)
 node refill_prot_x_hits_andMatrixOutputs_hi_lo_hi_108 = cat(refill_prot_x_hits_andMatrixOutputs_andMatrixInput_5_108, refill_prot_x_hits_andMatrixOutputs_andMatrixInput_6_108)
@@ -3685,7 +3658,6 @@ node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_76396 = bits(rr_actMas
 node _mergedSegEntActMaskVec_resMask_nfSelMask_uidSelMask_T_48557 = bits(rr_actMask, 96, 96)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_333624 = bits(rr_actMask, 81, 81)
 wire req_prot_a_hits_plaInput_27 : UInt<37>
-when enable_DIS[1] :
 node _historyPreOld_F3_T_297 = mux(_historyPreOld_F3_T_296, _historyPreOld_F3_T_45, _historyPreOld_F3_T_41)
 node req_cacheable_hits_invMatrixOutputs_69 = bits(req_cacheable_hits_orMatrixOutputs_69, 0, 0)
 node _elementInfo_mergedSegInfo_resElemInfo_nfSelElemInfo_uidSelElemInfo_T_849 = mux(_elementInfo_mergedSegInfo_resElemInfo_nfSelElemInfo_uidSelElemInfo_T_811, elementInfo_mergedSegInfo_resElemInfo_nfSelElemInfo_uidSelElemInfo_nidSelElemInfo_99.ewNum, UInt<1>(0h0))
@@ -3884,7 +3856,6 @@ node _robVectorClockEn_T_1 = or(_robVectorClockEn_T, resetPulse)
 node _T_74077 = bits(_T_74076, 2, 0)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_193277 = bits(rr_actMask, 91, 91)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_311169 = bits(rr_actMask, 80, 80)
-when _T_2837 :
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_158547 = bits(rr_actMask, 48, 48)
 node _ijtpHistory_BR1_rewindRd_T_46 = mux(_ijtpHistory_BR1_rewindRd_T_27, _ijtpHistory_BR1_rewindRd_T_36, _ijtpHistory_BR1_rewindRd_T_45)
 node _mergedSegEntActMaskVec_resMask_nfSelMask_uidSelMask_T_114446 = bits(rr_actMask, 19, 19)
@@ -3913,7 +3884,6 @@ node _uops_formedPatterns_f_mapping_m_legal_T_40376 = and(_uops_formedPatterns_f
 node _enqInputBits_T_2921 = mux(enqSel_11[2], io.enqReq[2].bits.flush, UInt<1>(0h0))
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_349454 = bits(rr_actMask, 92, 92)
 node refill_prot_pp_hits_andMatrixOutputs_andMatrixInput_8_138 = bits(refill_prot_pp_hits_invInputs_142, 32, 32)
-when _T_1450 :
 node _mergedSegEntActMaskVec_resMask_nfSelMask_uidSelMask_T_3854 = bits(rr_actMask, 4, 4)
 node _T_54497 = add(_T_54222, _T_54223)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_40267 = bits(rr_actMask, 6, 6)
@@ -4000,7 +3970,6 @@ node _T_7052 = bits(_T_7051, 1, 0)
 node _T_29138 = bits(_T_28982, 155, 155)
 node hi_lo_hi_hi_hi_hi_hi_124 = cat(robVec.valid[119], robVec.valid[118])
 node req_prot_x_hits_orMatrixOutputs_47 = orr(req_prot_x_hits_andMatrixOutputs_0_2_47)
-when lstr_valid_q :
 node _uops_formedPatterns_f_mapping_m_legal_T_5582 = and(_uops_formedPatterns_f_mapping_m_T_56, UInt<32>(0hfff0707f))
 node _uops_formedPatterns_f_mapping_m_legal_T_32358 = and(_uops_formedPatterns_f_mapping_m_T_416, UInt<32>(0hfc0ff07f))
 node _mergedSegEntActMaskVec_resMask_nfSelMask_uidSelMask_T_48204 = bits(rr_actMask, 1, 1)
@@ -4239,7 +4208,6 @@ node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_403668 = bits(rr_actMa
 node _uops_formedPatterns_f_mapping_q1_T_1408 = bits(_uops_formedPatterns_f_mapping_q1_T_1407, 11, 11)
 connect clock_enable_sink_bundle_in_0, clock_enable_sync_bundle_out_0
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_49591 = bits(rr_actMask, 93, 93)
-when _T_4457 :
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_317693 = bits(rr_actMask, 57, 57)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_69853 = bits(rr_actMask, 96, 96)
 node _mergedSegEntActMaskVec_resMask_nfSelMask_uidSelMask_T_19068 = bits(rr_actMask, 4, 4)
@@ -4418,7 +4386,6 @@ node _robVecDispSel1H_T_563 = bits(robVecMem.io.robValidSetRot[3], 112, 112)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_131823 = bits(rr_actMask, 72, 72)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_15944 = bits(rr_actMask, 57, 57)
 node _entryHasTgtNxt_T_33 = bits(entryTgt[1], 4, 4)
-when _T_369 :
 node _simpleUnitVecMask_resMask_nfSelMask_uidSelMask_T_18340 = bits(rr_vlMask, 1, 1)
 node _T_6072 = bits(r_176, 11, 11)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_93032 = bits(rr_actMask, 65, 65)
@@ -4428,7 +4395,6 @@ node _lateVecRCIncEnable_T_927 = bits(lateVecRHFRCEnableVec_3, 154, 154)
 node _mergedSegEntActMaskVec_resMask_nfSelMask_uidSelMask_T_43535 = bits(rr_actMask, 50, 50)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_21525 = bits(rr_actMask, 113, 113)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_251313 = bits(rr_actMask, 104, 104)
-when _T_4710 :
 node _T_1375 = eq(_T_1374, UInt<1>(0h0))
 node _iexPipeSupport_2_T_130 = and(_iexPipeSupport_2_T_128, _iexPipeSupport_2_T_129)
 connect hits_31[14], UInt<1>(0h0)
@@ -4508,7 +4474,6 @@ node _T_57336 = bits(_T_57335, 1, 0)
 node _mergedSegEntActMaskVec_resMask_nfSelMask_uidSelMask_T_18636 = bits(rr_actMask, 87, 87)
 node formedPatterns_f_mapping_m_decoded_andMatrixOutputs_andMatrixInput_3_34 = bits(formedPatterns_f_mapping_m_decoded_invInputs_1, 12, 12)
 connect rdu.io.bp[4].control.action, csr.io.bp[4].control.action
-when _T_4242 :
 connect _enqBitsPacked_WIRE_115, _enqBitsPacked_WIRE_116
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_233254 = bits(rr_actMask, 126, 126)
 node _T_521 = and(_T_520, io.signals[2])
@@ -4655,7 +4620,6 @@ node _rduChickenBits_T_4 = bits(_rduChickenBits_WIRE, 4, 4)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_255911 = bits(rr_actMask, 90, 90)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_284370 = bits(rr_actMask, 79, 79)
 node _mergedSegEntActMaskVec_resMask_nfSelMask_uidSelMask_T_13824 = bits(rr_actMask, 56, 56)
-when _T_242 :
 connect rduPerfEvents.stall.pcmtTagBuf, pcmtJalrTagBufStall_DIS
 node _mergedSegEntActMaskVec_resMask_nfSelMask_uidSelMask_T_48541 = bits(rr_actMask, 80, 80)
 node _mergedSegEntActMaskVec_resMask_nfSelMask_uidSelMask_T_99947 = bits(rr_actMask, 74, 74)
@@ -4679,7 +4643,6 @@ node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_224083 = bits(rr_actMa
 node _mergedSegEntActMaskVec_resMask_nfSelMask_uidSelMask_T_53861 = bits(rr_actMask, 9, 9)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_204790 = bits(rr_actMask, 74, 74)
 node _mergedSegEntActMaskVec_resMask_nfSelMask_uidSelMask_T_47394 = bits(rr_actMask, 108, 108)
-when _T_6191 :
 node refill_prot_cmo_hits_andMatrixOutputs_hi_285 = cat(refill_prot_cmo_hits_andMatrixOutputs_hi_hi_261, refill_prot_cmo_hits_andMatrixOutputs_hi_lo_261)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_198603 = bits(rr_actMask, 115, 115)
 node formedPatterns_f_mapping_m_decoded_andMatrixOutputs_andMatrixInput_2_81 = bits(formedPatterns_f_mapping_m_decoded_invInputs_2, 29, 29)
@@ -4795,7 +4758,6 @@ node lo_lo_lo_hi_lo_hi_hi_17 = cat(robVec.valid[14], robVec.valid[13])
 node _mergedSegEntActMaskVec_resMask_nfSelMask_uidSelMask_T_35478 = bits(rr_actMask, 86, 86)
 node _simpleUnitVecMask_resMask_nfSelMask_uidSelMask_T_1651 = bits(rr_vlMask, 114, 114)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_172034 = bits(rr_actMask, 43, 43)
-when _T_2439 :
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_378528 = bits(rr_actMask, 105, 105)
 node _T_12324 = geq(_T_12323, UInt<4>(0ha))
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_431023 = bits(rr_actMask, 60, 60)
@@ -4950,13 +4912,11 @@ wire refill_prot_pp_hits_85 : UInt<1>
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_308808 = bits(rr_actMask, 25, 25)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_233832 = bits(rr_actMask, 64, 64)
 node req_prot_r_hits_andMatrixOutputs_andMatrixInput_0_201 = bits(req_prot_r_hits_invInputs_181, 14, 14)
-when _T_64 :
 node _req_prot_cmo_unsafeMux_T_404 = or(_req_prot_cmo_unsafeMux_T_403, _req_prot_cmo_unsafeMux_T_131)
 node io_counters_0_inc_sets_hi_hi_hi_26 = cat(io_counters_0_inc_sets_hi_hi_hi_hi_23, io_counters_0_inc_sets_hi_hi_hi_lo_18)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_260489 = bits(rr_actMask, 56, 56)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_379187 = bits(rr_actMask, 124, 124)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_334164 = bits(rr_actMask, 106, 106)
-when lstm_validLdQ_en_1 :
 node _T_1574 = bits(r_45, 2, 2)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_100360 = bits(rr_actMask, 78, 78)
 node _mergedSegEntActMaskVec_resMask_nfSelMask_uidSelMask_T_62364 = bits(rr_actMask, 57, 57)
@@ -5125,7 +5085,6 @@ node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_345729 = bits(rr_actMa
 node _r_T_327 = cat(r_327, g_363)
 node _T_11125 = bits(_T_11111, 13, 13)
 node _req_prot_cmo_hitAny_T_1230 = xor(req_physaddr, UInt<27>(0h4021000))
-when _T_5222 :
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_402648 = bits(rr_actMask, 109, 109)
 node _newCnt_T_2494 = bits(_newCnt_T_2493, 2, 0)
 node _mergedSegEntActMaskVec_resMask_nfSelMask_uidSelMask_T_80823 = bits(rr_actMask, 61, 61)
@@ -5235,7 +5194,6 @@ node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_163456 = bits(rr_actMa
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_37536 = bits(rr_actMask, 93, 93)
 node _cmplCntVec_T_51 = bits(cmplEnVec, 51, 51)
 node _simpleUnitVecMask_resMask_nfSelMask_uidSelMask_T_11304 = bits(rr_vlMask, 29, 29)
-when _T_688 :
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_162674 = bits(rr_actMask, 67, 67)
 node _simpleUnitVecMask_resMask_nfSelMask_uidSelMask_T_17033 = bits(rr_vlMask, 105, 105)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_343864 = bits(rr_actMask, 36, 36)
@@ -5454,7 +5412,6 @@ node _simpleUnitVecMask_resMask_nfSelMask_uidSelMask_T_3019 = bits(rr_vlMask, 72
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_293892 = bits(rr_actMask, 112, 112)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_323338 = bits(rr_actMask, 64, 64)
 node robHasMemVec_lo_lo_hi_hi_lo_hi_1 = cat(robHasMemVec_lo_lo_hi_hi_lo_hi_hi_1, robVecMem.io.robVec.hasMem[32])
-when _T_4856 :
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_80438 = bits(rr_actMask, 38, 38)
 node _simpleUnitVecMask_resMask_nfSelMask_uidSelMask_T_5911 = bits(rr_vlMask, 18, 18)
 connect _unProtLsuDispPacketBits_WIRE[3].groupNonDisp.vstartZero, UInt<1>(0h0)
@@ -5659,7 +5616,6 @@ node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_33978 = bits(rr_actMas
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_66193 = bits(rr_actMask, 24, 24)
 wire _WIRE_1 : UInt<1>[32]
 connect _unProtFexDispReq_DIS_WIRE_1.groupDisp.srcTag[1].ready, UInt<1>(0h0)
-when _T_8893 :
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_378203 = bits(rr_actMask, 39, 39)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_114648 = bits(rr_actMask, 16, 16)
 node _mergedSegEntActMaskVec_resMask_nfSelMask_uidSelMask_T_110976 = bits(rr_actMask, 104, 104)
@@ -5683,7 +5639,6 @@ node _uops_formedPatterns_f_mapping_m_legal_T_18229 = eq(UInt<31>(0h42002057), _
 node _T_2991 = asUInt(reset)
 node _T_5299 = bits(robValidClear, 106, 106)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_331544 = bits(rr_actMask, 55, 55)
-when _T_24213 :
 node _simpleUnitVecMask_resMask_nfSelMask_uidSelMask_T_10960 = bits(rr_vlMask, 69, 69)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_324200 = bits(rr_actMask, 30, 30)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_162568 = bits(rr_actMask, 89, 89)
@@ -5814,7 +5769,6 @@ node _mergedSegEntActMaskVec_resMask_nfSelMask_uidSelMask_T_109751 = bits(rr_act
 node _T_8552 = add(_T_8307, _T_8308)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_277340 = bits(rr_actMask, 112, 112)
 node refill_prot_pp_hits_andMatrixOutputs_andMatrixInput_6_127 = bits(refill_prot_pp_hits_invInputs_131, 18, 18)
-when _T_4612 :
 connect unProtFexDispPacket_DIS[2].groupDisp.srcTag, fexDispPacket_DIS[2].bits.srcTag
 node decoded_addr_decoded_decoded_andMatrixOutputs_andMatrixInput_5_91 = bits(decoded_addr_decoded_decoded_plaInput, 9, 9)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_333955 = bits(rr_actMask, 28, 28)
@@ -6044,7 +5998,6 @@ node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_37370 = bits(rr_actMas
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_129994 = bits(rr_actMask, 56, 56)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_92330 = bits(rr_actMask, 3, 3)
 node _csr_exists_T_1163 = or(_csr_exists_T_1162, _csr_exists_T_934)
-when _T_282 :
 node _T_3825 = and(_T_3823, _T_3824)
 node _mergedSegEntActMaskVec_resMask_nfSelMask_uidSelMask_T_3592 = bits(rr_actMask, 126, 126)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_105227 = bits(rr_actMask, 75, 75)
@@ -6234,7 +6187,6 @@ node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_69803 = bits(rr_actMas
 node _mergedSegEntActMaskVec_resMask_nfSelMask_uidSelMask_T_52231 = bits(rr_actMask, 78, 78)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_93882 = bits(rr_actMask, 19, 19)
 node _simpleUnitVecMask_resMask_nfSelMask_uidSelMask_T_10666 = bits(rr_vlMask, 31, 31)
-else :
 node refill_prot_pp_hits_orMatrixOutputs_74 = orr(refill_prot_pp_hits_andMatrixOutputs_0_2_74)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_367023 = bits(rr_actMask, 36, 36)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_249091 = bits(rr_actMask, 60, 60)
@@ -6285,7 +6237,6 @@ node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_182830 = bits(rr_actMa
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_341023 = bits(rr_actMask, 20, 20)
 node hi_hi_hi_lo_hi_lo_79 = cat(robVec.valid[146], robVec.valid[145])
 node decoded_addr_decoded_decoded_invMatrixOutputs_hi_hi_lo_hi_lo = cat(decoded_addr_decoded_decoded_invMatrixOutputs_hi_hi_lo_hi_lo_hi, decoded_addr_decoded_decoded_invMatrixOutputs_hi_hi_lo_hi_lo_lo)
-when _T_8189 :
 node _T_15703 = and(_T_15699, _T_15702)
 node _T_240 = bits(dbTgt_ID[0], 0, 0)
 node updateTag_F1_h_2 = cat(updateTag_F1_h_hi, updateTag_F1_h_lo)
@@ -6295,7 +6246,6 @@ node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_71038 = bits(rr_actMas
 node robRslvSetEx_hi_hi_hi_lo_lo_hi = cat(robRslvSetEx_hi_hi_hi_lo_lo_hi_hi, robVec.hasMem[142])
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_303150 = bits(rr_actMask, 5, 5)
 node lo_lo_hi_lo_hi_lo_113 = cat(robVec.valid[26], robVec.valid[25])
-when reset :
 node _simpleUnitVecMask_resMask_nfSelMask_uidSelMask_T_13085 = bits(rr_vlMask, 16, 16)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_341766 = bits(rr_actMask, 120, 120)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_224892 = bits(rr_actMask, 107, 107)
@@ -6393,7 +6343,6 @@ node decSet_hi_lo_hi_54 = cat(decSet_hi_lo_hi_hi_54, _decSet_T_1420)
 node _mergedSegEntActMaskVec_resMask_nfSelMask_uidSelMask_T_42916 = bits(rr_actMask, 80, 80)
 node _T_19273 = bits(r_539, 9, 9)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_256759 = bits(rr_actMask, 42, 42)
-when robValidGroupEn_6 :
 node _T_24892 = bits(_T_24891, 1, 0)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_110609 = bits(rr_actMask, 77, 77)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_403877 = bits(rr_actMask, 52, 52)
@@ -6407,7 +6356,6 @@ node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_363702 = bits(rr_actMa
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_316875 = bits(rr_actMask, 7, 7)
 node _lsuDispReqUnpacked_REN_T_1 = and(valid_REN[1], lsuDbTgtQual_REN_1)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_301752 = bits(rr_actMask, 17, 17)
-when _T_3152 :
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_186467 = bits(rr_actMask, 0, 0)
 node _instQual_REN_2_ntlh_T_47 = eq(_instQual_REN_2_ntlh_T_46, UInt<1>(0h0))
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_31133 = bits(rr_actMask, 111, 111)
@@ -6570,7 +6518,6 @@ node _simpleUnitVecMask_resMask_nfSelMask_uidSelMask_T_14636 = bits(rr_vlMask, 2
 node decoded_addr_decoded_decoded_andMatrixOutputs_hi_hi_9 = cat(decoded_addr_decoded_decoded_andMatrixOutputs_andMatrixInput_0_9, decoded_addr_decoded_decoded_andMatrixOutputs_andMatrixInput_1_9)
 node _T_3160 = eq(_T_3159, UInt<1>(0h0))
 node _req_cacheable_hits_andMatrixOutputs_T_290 = cat(req_cacheable_hits_andMatrixOutputs_hi_290, req_cacheable_hits_andMatrixOutputs_lo_266)
-when _T_560 :
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_346684 = bits(rr_actMask, 31, 31)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_297080 = bits(rr_actMask, 96, 96)
 node _lstm_mshrVecNewerWithoutLsto_T_5008 = bits(_lstm_mshrVecNewerWithoutLsto_T_5007, 11, 11)
@@ -6803,7 +6750,6 @@ node formedPatterns_f_mapping_m_decoded_andMatrixOutputs_andMatrixInput_2_2 = bi
 node _mergedSegEntActMaskVec_resMask_nfSelMask_uidSelMask_T_22116 = bits(rr_actMask, 81, 81)
 node refill_prot_eff_hits_invInputs_242 = not(refill_prot_eff_hits_plaInput_242)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_370895 = bits(rr_actMask, 59, 59)
-when _T_56511 :
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_366857 = bits(rr_actMask, 10, 10)
 node _uops_formedPatterns_f_mapping_m_legal_T_33667 = eq(UInt<13>(0h1063), _uops_formedPatterns_f_mapping_m_legal_T_33666)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_320926 = bits(rr_actMask, 86, 86)
@@ -6818,7 +6764,6 @@ node _lstm_mshrVecNewerWithoutLsto_T_2481 = bits(_lstm_mshrVecNewerWithoutLsto_T
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_236839 = bits(rr_actMask, 123, 123)
 wire req_prot_mmio_hits_243 : UInt<1>
 node _formedPatterns_f_mapping_m_legal_T_1748 = and(_formedPatterns_f_mapping_m_T_56, UInt<7>(0h7f))
-when lruArrayGrpEn_10 :
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_109730 = bits(rr_actMask, 94, 94)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_362872 = bits(rr_actMask, 2, 2)
 node _T_4783 = bits(_T_4782, 4, 0)
@@ -7219,7 +7164,6 @@ node _T_3615 = bits(robRetireEnVec, 57, 57)
 node _T_25183 = bits(_T_25118, 64, 64)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_316703 = bits(rr_actMask, 91, 91)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_378572 = bits(rr_actMask, 21, 21)
-when _T_1294 :
 node _T_859 = asUInt(reset)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_40956 = bits(rr_actMask, 55, 55)
 node _mergedSegEntActMaskVec_resMask_nfSelMask_uidSelMask_T_36914 = bits(rr_actMask, 84, 84)
@@ -7243,7 +7187,6 @@ node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_163744 = bits(rr_actMa
 node _wrMask_MD_u_T_15 = bits(useful_MD_1, 0, 0)
 node _T_6446 = or(bankLsWrEn_2[0], bankLsWrEn_2[1])
 node req_prot_cmo_hits_andMatrixOutputs_andMatrixInput_2_206 = bits(req_prot_cmo_hits_plaInput_186, 14, 14)
-when _T_15523 :
 node _T_17825 = geq(_T_17824, UInt<2>(0h3))
 regreset freeVecReg_203 : UInt<1>, clock, reset, UInt<1>(0h1)
 node lstm_prevL1dcTagHitWayDcdWithoutWid = cat(lstm_prevL1dcTagHitWayDcdWithoutWid_hi, lstm_prevL1dcTagHitWayDcdWithoutWid_lo)
@@ -7270,7 +7213,6 @@ node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_273903 = bits(rr_actMa
 node lo_lo_hi_lo_hi_hi_hi_11 = cat(robVec.valid[29], robVec.valid[28])
 connect hits_2[2], _io_perfDecode_REN_2_8_T_85
 node _incAmt_DIS_res_carry_T_66 = and(_incAmt_DIS_T_38, _incAmt_DIS_T_39)
-else :
 node uops_formedPatterns_f_mapping_m_decoded_orMatrixOutputs_hi_hi_126 = cat(uops_formedPatterns_f_mapping_m_decoded_orMatrixOutputs_hi_hi_hi_94, uops_formedPatterns_f_mapping_m_decoded_orMatrixOutputs_hi_hi_lo_47)
 wire recoverReq_RT3_3 : { moveOp : UInt<1>, srcValid : UInt<1>[4], srcARIdx : UInt<5>[4], destValid : UInt<1>[1], destARIdx : UInt<5>[1], destPRIdx : UInt<8>[1]}
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_77841 = bits(rr_actMask, 5, 5)
@@ -7439,7 +7381,6 @@ invalidate refill_prot_r_hits_extra_trimmed_85
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_220024 = bits(rr_actMask, 109, 109)
 node refill_prot_r_hits_andMatrixOutputs_lo_hi_hi_135 = cat(refill_prot_r_hits_andMatrixOutputs_andMatrixInput_9_135, refill_prot_r_hits_andMatrixOutputs_andMatrixInput_10_135)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_251810 = bits(rr_actMask, 89, 89)
-when _T_52647 :
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_210379 = bits(rr_actMask, 52, 52)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_111247 = bits(rr_actMask, 73, 73)
 node _fpAddSub_DIS_T_12 = eq(_fpAddSub_DIS_T_11, UInt<1>(0h0))
@@ -7592,7 +7533,6 @@ node _refill_prot_a_hitAny_T_571 = cvt(_refill_prot_a_hitAny_T_570)
 node _lsto_olderThanIss_T_5 = bits(io.issReq.bits.payload.cmn.gid, 8, 8)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_56710 = bits(rr_actMask, 38, 38)
 node _T_63727 = bits(_T_63726, 3, 0)
-when _T_6644 :
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_148265 = bits(rr_actMask, 56, 56)
 node _enqInputBits_T_515 = or(_enqInputBits_T_511, _enqInputBits_T_512)
 node _T_4131 = asUInt(reset)
@@ -7659,7 +7599,6 @@ node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_156406 = bits(rr_actMa
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_391925 = bits(rr_actMask, 114, 114)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_420335 = bits(rr_actMask, 65, 65)
 node _lsto_mergedSegFaultElemInfo_resElemInfo_nfSelElemInfo_uidSelElemInfo_nidSelElemInfo_T_78 = mux(_lsto_mergedSegFaultElemInfo_resElemInfo_nfSelElemInfo_uidSelElemInfo_nidSelElemInfo_T_70, UInt<1>(0h0), UInt<1>(0h0))
-else :
 node _simpleUnitVecMask_resMask_nfSelMask_uidSelMask_T_19656 = bits(rr_vlMask, 31, 31)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_174375 = bits(rr_actMask, 53, 53)
 node req_cacheable_hits_andMatrixOutputs_hi_231 = cat(req_cacheable_hits_andMatrixOutputs_hi_hi_207, req_cacheable_hits_andMatrixOutputs_hi_lo_207)
@@ -8017,7 +7956,6 @@ node req_prot_pp_hits_andMatrixOutputs_lo_236 = cat(req_prot_pp_hits_andMatrixOu
 node _T_15824 = bits(_T_15823, 1, 0)
 node req_prot_pp_hits_invInputs_75 = not(req_prot_pp_hits_plaInput_75)
 node _io_perfDecode_REN_1_10_T_302 = or(_io_perfDecode_REN_1_10_T_301, _io_perfDecode_REN_1_10_T_299)
-when _T_2883 :
 node hi_lo_hi_hi_hi_hi_18 = cat(hi_lo_hi_hi_hi_hi_hi_18, robVec.valid[117])
 node _instTraceRead_RC_4_T_202 = or(_instTraceRead_RC_4_T_201, _instTraceRead_RC_4_T_183)
 node refill_cacheable_hits_andMatrixOutputs_lo_hi_129 = cat(refill_cacheable_hits_andMatrixOutputs_lo_hi_hi_129, refill_cacheable_hits_andMatrixOutputs_lo_hi_lo_94)
@@ -8235,7 +8173,6 @@ node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_124459 = bits(rr_actMa
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_4042 = bits(rr_actMask, 71, 71)
 node _T_7551 = and(_T_7550, io.lstm_lstoVecStqEstablishOlderVAHazard[0])
 node uops_formedPatterns_f_mapping_m_decoded_andMatrixOutputs_andMatrixInput_1_1209 = bits(uops_formedPatterns_f_mapping_m_decoded_plaInput_21, 5, 5)
-when _T_67620 :
 node req_prot_pp_hits_andMatrixOutputs_lo_lo_lo_117 = cat(req_prot_pp_hits_andMatrixOutputs_andMatrixInput_15_117, req_prot_pp_hits_andMatrixOutputs_andMatrixInput_16_67)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_264944 = bits(rr_actMask, 16, 16)
 node refill_cacheable_hits_andMatrixOutputs_lo_hi_hi_110 = cat(refill_cacheable_hits_andMatrixOutputs_andMatrixInput_7_110, refill_cacheable_hits_andMatrixOutputs_andMatrixInput_8_110)
@@ -8313,7 +8250,6 @@ node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_390472 = bits(rr_actMa
 node _illegalVecUnqual_REN_check_vd_T_35 = eq(inst_REN_0.funct3, UInt<3>(0h4))
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_244201 = bits(rr_actMask, 55, 55)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_104044 = bits(rr_actMask, 46, 46)
-when _T_5775 :
 node decSet_lo_lo_38 = cat(decSet_lo_lo_hi_38, decSet_lo_lo_lo_38)
 node uops_formedPatterns_f_mapping_m_decoded_andMatrixOutputs_andMatrixInput_2_1059 = bits(uops_formedPatterns_f_mapping_m_decoded_plaInput_19, 6, 6)
 node _io_robPerfWPPerfMon_RT_8_T_23 = bits(_io_robPerfWPPerfMon_RT_8_T_6, 16, 16)
@@ -8333,7 +8269,6 @@ node req_prot_pp_hits_andMatrixOutputs_andMatrixInput_13_76 = bits(req_prot_pp_h
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_97971 = bits(rr_actMask, 8, 8)
 node _mergedSegEntActMaskVec_resMask_nfSelMask_uidSelMask_T_7441 = bits(rr_actMask, 123, 123)
 node _uops_formedPatterns_f_mapping_m_legal_T_26456 = and(_uops_formedPatterns_f_mapping_m_T_333, UInt<32>(0hfc00707f))
-when readyVecGrpEn_5 :
 node _refill_prot_a_hitAny_T_1646 = or(_refill_prot_a_hitAny_T_1645, _refill_prot_a_hitAny_T_889)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_235142 = bits(rr_actMask, 92, 92)
 node searchPRIdx_1_dataRight_dataRight_dataRight_dataLeft_dataRight = mux(searchPRIdx_1_dataRight_dataRight_dataRight_dataLeft_dataRight_selLeft, searchPRIdx_1_dataRight_dataRight_dataRight_dataLeft_dataRight_dataLeft, searchPRIdx_1_dataRight_dataRight_dataRight_dataLeft_dataRight_dataRight)
@@ -8433,7 +8368,6 @@ node generalEntActMaskVec_resMask_nfSelMask_uidSelMask_lo_275 = cat(generalEntAc
 node _lateIncCnt_T_102 = tail(_lateIncCnt_T_101, 1)
 node _io_perfDecode_REN_3_7_T_60 = eq(_io_perfDecode_REN_3_7_T_59, UInt<1>(0h0))
 node _mergedSegEntActMaskVec_resMask_nfSelMask_uidSelMask_T_96081 = bits(rr_actMask, 8, 8)
-when _T_6753 :
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_228720 = bits(rr_actMask, 91, 91)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_377644 = bits(rr_actMask, 120, 120)
 node _T_185 = or(_T_184, _T_165)
@@ -8745,7 +8679,6 @@ node _instQual_REN_1_ntlh_T_34 = eq(_instQual_REN_1_ntlh_T_33, UInt<1>(0h0))
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_424409 = bits(rr_actMask, 97, 97)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_41463 = bits(rr_actMask, 48, 48)
 node _mergedSegEntActMaskVec_resMask_nfSelMask_uidSelMask_T_18882 = bits(rr_actMask, 77, 77)
-when _read_hpmevent_T_237 :
 wire req_prot_pp_hits_extra_trimmed_148 : UInt<0>
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_152535 = bits(rr_actMask, 81, 81)
 connect io_s2vPraClearReq_2_out.bits, s2vAllocIdx_DIS[2]
@@ -8790,7 +8723,6 @@ node _uops_formedPatterns_f_mapping_m_legal_T_17380 = and(_uops_formedPatterns_f
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_89498 = bits(rr_actMask, 119, 119)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_307194 = bits(rr_actMask, 77, 77)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_41558 = bits(rr_actMask, 15, 15)
-else :
 node _mergedSegEntActMaskVec_resMask_nfSelMask_uidSelMask_T_78936 = bits(rr_actMask, 117, 117)
 node _formedPatterns_f_mapping_q2_T_10 = bits(formedPatterns_f_mapping_x, 11, 7)
 node refill_prot_eff_hits_andMatrixOutputs_andMatrixInput_1_95 = bits(refill_prot_eff_hits_invInputs_75, 13, 13)
@@ -8892,7 +8824,6 @@ node _req_prot_pp_unsafeMux_T_503 = or(_req_prot_pp_unsafeMux_T_502, _req_prot_p
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_7068 = bits(rr_actMask, 21, 21)
 node _T_2243 = bits(_T_2242, 1, 0)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_233556 = bits(rr_actMask, 44, 44)
-when bankRdValid[1] :
 node _rw_rsp_bits_rdata_T_108 = mux(decoded_addr_108_2, UInt<1>(0h0), UInt<1>(0h0))
 node cmo_array_lo_hi = cat(cmo_array_lo_hi_hi, cmo_array_lo_hi_lo)
 node _uops_formedPatterns_f_mapping_m_legal_T_7288 = and(_uops_formedPatterns_f_mapping_m_T_84, UInt<32>(0hfc00707f))
@@ -9119,7 +9050,6 @@ node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_100939 = bits(rr_actMa
 node refill_prot_pp_hits_andMatrixOutputs_andMatrixInput_1_48 = bits(refill_prot_pp_hits_plaInput_28, 13, 13)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_400543 = bits(rr_actMask, 64, 64)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_133096 = bits(rr_actMask, 62, 62)
-when _T_4963 :
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_408702 = bits(rr_actMask, 90, 90)
 reg io_counters_4_inc_sets_REG : UInt<1>, hpmClock_HPM_CLOCKGATE.out
 node _T_12981 = add(_T_12976, _T_12980)
@@ -9140,7 +9070,6 @@ node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_367637 = bits(rr_actMa
 node _uops_formedPatterns_f_legal_T_9002 = and(opcodes_4, UInt<32>(0hfff0707f))
 node _mergedSegEntActMaskVec_resMask_nfSelMask_uidSelMask_T_103917 = bits(rr_actMask, 2, 2)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_347130 = bits(rr_actMask, 93, 93)
-when _T_2287 :
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_94141 = bits(rr_actMask, 22, 22)
 node _firstRegSetTwice_T_50 = mux(_firstRegSetTwice_T_12, UInt<4>(0hc), _firstRegSetTwice_T_49)
 node _T_187 = bits(_T_186, 1, 0)
@@ -9187,11 +9116,9 @@ node _lstr_lstmVecNewestOlderFwdableVAMatchByteSatisfy_1_T_6 = or(_lstr_lstmVecN
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_92136 = bits(rr_actMask, 67, 67)
 node _mergedSegEntActMaskVec_resMask_nfSelMask_uidSelMask_T_6125 = bits(rr_actMask, 93, 93)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_416927 = bits(rr_actMask, 51, 51)
-when _T_5982 :
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_389707 = bits(rr_actMask, 84, 84)
 node _elementInfo_mergedSegInfo_resElemInfo_nfSelElemInfo_uidSelElemInfo_nidSelElemInfo_T_385 = or(_elementInfo_mergedSegInfo_resElemInfo_nfSelElemInfo_uidSelElemInfo_nidSelElemInfo_T_384, _elementInfo_mergedSegInfo_resElemInfo_nfSelElemInfo_uidSelElemInfo_nidSelElemInfo_T_378)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_317480 = bits(rr_actMask, 100, 100)
-when updateValid_RD[1] :
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_185505 = bits(rr_actMask, 68, 68)
 node _T_5623 = eq(_T_5622, UInt<5>(0h1c))
 node _simpleUnitVecMask_resMask_nfSelMask_uidSelMask_T_12849 = bits(rr_vlMask, 36, 36)
@@ -9279,7 +9206,6 @@ connect req_prot_mmio_hits_134, req_prot_mmio_hits_plaOutput_134
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_114409 = bits(rr_actMask, 33, 33)
 node _T_9571 = geq(_T_9570, UInt<5>(0h14))
 node lo_hi_hi_hi_124 = cat(lo_hi_hi_hi_hi_124, lo_hi_hi_hi_lo_124)
-when _T_3884 :
 node lo_hi_hi_hi_lo_64 = cat(lo_hi_hi_hi_lo_hi_64, lo_hi_hi_hi_lo_lo_64)
 node req_prot_x_hits_andMatrixOutputs_andMatrixInput_8_42 = bits(req_prot_x_hits_invInputs_46, 29, 29)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_26442 = bits(rr_actMask, 34, 34)
@@ -9828,7 +9754,6 @@ node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_338302 = bits(rr_actMa
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_109793 = bits(rr_actMask, 29, 29)
 node _uops_formedPatterns_f_legal_T_14605 = or(_uops_formedPatterns_f_legal_T_14604, _uops_formedPatterns_f_legal_T_13781)
 node _T_70134 = bits(_T_70037, 96, 96)
-when _T_744 :
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_102488 = bits(rr_actMask, 28, 28)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_184454 = bits(rr_actMask, 47, 47)
 node _T_6852 = bits(_T_6764, 87, 87)
@@ -9905,7 +9830,6 @@ node _T_3759 = bits(robRetireEnVec, 81, 81)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_65920 = bits(rr_actMask, 7, 7)
 node _uops_formedPatterns_f_mapping_m_legal_T_31685 = eq(UInt<6>(0h33), _uops_formedPatterns_f_mapping_m_legal_T_31684)
 node _illegalVecUnqual_REN_T_1169 = and(illegalVecUnqual_REN_check_vs2_widening_overlap_3, illegalVecUnqual_REN_vs2_widening_overlap_3)
-else :
 node _mergedSegEntActMaskVec_resMask_nfSelMask_uidSelMask_T_44169 = bits(rr_actMask, 23, 23)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_199819 = bits(rr_actMask, 45, 45)
 node _rewindCntVec_T_3080 = bits(_rewindCntVec_T_3079, 0, 0)
@@ -9955,7 +9879,6 @@ node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_198620 = bits(rr_actMa
 node _fflagsUpdateMultiple_34_T_13 = add(_fflagsUpdateMultiple_34_T_10, _fflagsUpdateMultiple_34_T_12)
 node _instTraceRead_RC_6_T_320 = or(_instTraceRead_RC_6_T_319, _instTraceRead_RC_6_T_301)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_146592 = bits(rr_actMask, 53, 53)
-else :
 node _mergedSegEntActMaskVec_resMask_nfSelMask_uidSelMask_T_52486 = bits(rr_actMask, 75, 75)
 connect req_cacheable_hits_plaInput_258, _req_cacheable_hits_T_258
 node _byp_parcel_select_1_T_12 = bits(sel_1, 12, 12)
