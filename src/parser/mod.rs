@@ -1,5 +1,5 @@
-mod statement;
-mod expr;
+pub mod statement;
+pub mod expr;
 
 use nom::IResult;
 use nom::combinator::{value, eof, opt, map};
@@ -12,7 +12,7 @@ use crate::tokenizer::Tok;
 use crate::RefPath;
 use crate::ast::*;
 use crate::{Direction, Type, BundleField, Flippedness};
-use statement::parse_statement;
+pub use statement::parse_statement;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ParseErr {
