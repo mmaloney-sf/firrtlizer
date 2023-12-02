@@ -151,11 +151,39 @@ fn parse_intmodule(input: &[Tok<'a>]) -> IResult<&[Tok<'a>], Tok, Error> { todo!
 */
 
 fn parse_reference<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], RefPath, ParseErr> {
-    let (input, refpath) = parse_reference_static(input)?;
+    let (input, refpath) = alt((
+        parse_reference_static,
+        parse_reference_dynamic,
+    ))(input)?;
     Ok((input, refpath))
 }
 
 fn parse_reference_static<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], RefPath, ParseErr> {
+    let (mut input, name) = consume_id(input)?;
+    let mut refpath = RefPath::Id(name.to_string());
+
+    loop {
+        if let Some(Tok::Punc(".")) = input.get(0) {
+            let (rest, _) = consume_punc(".")(input)?;
+            let (rest, name) = consume_id(rest)?;
+            input = rest;
+            refpath = RefPath::Dot(Box::new(refpath), name.to_string());
+        } else if let Some(Tok::Punc("[")) = input.get(0) {
+            let (rest, _) = consume_punc("[")(input)?;
+            let (rest, idx) = consume_lit(rest)?;
+            let (rest, _) = consume_punc("]")(rest)?;
+            input = rest;
+            refpath = RefPath::Index(Box::new(refpath), idx as isize);
+        } else {
+            break;
+        }
+
+    }
+//    parse_vec_size
+    Ok((input, refpath))
+}
+
+fn parse_reference_dynamic<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], RefPath, ParseErr> {
     let (input, name) = consume_id(input)?;
     let mut refpath = RefPath::Id(name.to_string());
 //    parse_vec_size
