@@ -18,6 +18,7 @@ pub fn parse_statement<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>
 fn parse_circuit_component<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], Statement, ParseErr> {
     alt((
         parse_circuit_component_node,
+        parse_circuit_component_reg,
     ))(input)
 }
 
@@ -27,6 +28,37 @@ fn parse_circuit_component_node<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b
     let (input, _) = consume_punc("=")(input)?;
     let (input, expr) = parse_expr(input)?;
     Ok((input, Statement::Node(name.to_string(), Box::new(expr))))
+}
+
+fn parse_circuit_component_reg<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], Statement, ParseErr> {
+    alt((
+        parse_circuit_component_reg_reg,
+        parse_circuit_component_reg_regreset,
+    ))(input)
+}
+
+fn parse_circuit_component_reg_reg<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], Statement, ParseErr> {
+    let (input, _) = consume_keyword("reg")(input)?;
+    let (input, name) = consume_id(input)?;
+    let (input, _) = consume_punc(":")(input)?;
+    let (input, typ) = parse_type(input)?;
+    let (input, _) = consume_punc(",")(input)?;
+    let (input, clock) = parse_expr(input)?;
+    Ok((input, Statement::Node(name.to_string(), Box::new(clock))))
+}
+
+fn parse_circuit_component_reg_regreset<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], Statement, ParseErr> {
+    let (input, _) = consume_keyword("regreset")(input)?;
+    let (input, name) = consume_id(input)?;
+    let (input, _) = consume_punc(":")(input)?;
+    let (input, typ) = parse_type(input)?;
+    let (input, _) = consume_punc(",")(input)?;
+    let (input, clock) = parse_expr(input)?;
+    let (input, _) = consume_punc(",")(input)?;
+    let (input, reset) = parse_expr(input)?;
+    let (input, _) = consume_punc(",")(input)?;
+    let (input, reset_val) = parse_expr(input)?;
+    Ok((input, Statement::Node(name.to_string(), Box::new(clock))))
 }
 
 fn parse_statement_wire<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], Statement, ParseErr> {

@@ -22,7 +22,11 @@ fn parse_expr_primop<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>],
     let (primop_name, _) = consume_id(input)?;
     eprintln!("Primop: {primop_name:?}");
     let (input, _) = consume_punc("(")(input)?;
-    let (input, expr) = parse_expr(input)?;
+    let (input, exprs) = separated_list0(consume_punc(","), parse_expr)(input)?;
+    if let Some(Tok::Punc(",")) = input.get(0) {
+        let (input, _) = consume_punc(",")(input)?;
+        let (input, vs) = separated_list0(consume_punc(","), consume_lit)(input)?;
+    }
     let (input, _) = consume_punc(")")(input)?;
     Ok((input, Expr::Var("asdf".into())))
 }

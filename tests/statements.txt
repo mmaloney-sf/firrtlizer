@@ -3393,7 +3393,6 @@ node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_377952 = bits(rr_actMa
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_360858 = bits(rr_actMask, 57, 57)
 node refill_prot_mmio_hits_andMatrixOutputs_andMatrixInput_6_180 = bits(refill_prot_mmio_hits_invInputs_184, 18, 18)
 node _T_26835 = bits(_T_26834, 1, 0)
-input clock : Clock
 node _mergedSegEntActMaskVec_resMask_nfSelMask_uidSelMask_T_15364 = bits(rr_actMask, 51, 51)
 node _generalEntActMaskVec_resMask_nfSelMask_uidSelMask_T_291998 = bits(rr_actMask, 10, 10)
 node _T_62040 = bits(_T_62039, 2, 0)
