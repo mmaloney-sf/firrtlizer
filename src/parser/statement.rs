@@ -47,6 +47,13 @@ fn parse_statement_connect_old<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b 
 }
 
 fn parse_connectlike<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], Statement, ParseErr> {
+    alt((
+        parse_connect,
+        parse_invalidate,
+    ))(input)
+}
+
+fn parse_connect<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], Statement, ParseErr> {
     let (input, _) = consume_keyword("connect")(input)?;
     let (input, r) = parse_reference(input)?;
     let (input, _) = consume_punc(",")(input)?;
@@ -54,3 +61,8 @@ fn parse_connectlike<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>],
     Ok((input, Statement::Connect(r, Box::new(expr))))
 }
 
+fn parse_invalidate<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], Statement, ParseErr> {
+    let (input, _) = consume_keyword("invalidate")(input)?;
+    let (input, r) = parse_reference(input)?;
+    Ok((input, Statement::Invalidate(r)))
+}

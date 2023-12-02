@@ -16,6 +16,7 @@ fn test_examples() {
     for (i, line) in contents.lines().enumerate() {
         let lineno = i + 1;
         let toks = tokenize(line).unwrap();
+        eprintln!("{i}: {line}");
         parse_statement(&toks).expect(&format!("Couldn't parse line {lineno}: {line}"));
     }
 }
