@@ -1,9 +1,8 @@
 pub mod statement;
 pub mod expr;
-use super::*;
 
 use nom::IResult;
-use nom::combinator::{value, eof, opt, map};
+use nom::combinator::{value, opt, map};
 use nom::branch::alt;
 use nom::multi::{many0, many1, separated_list0};
 use nom::sequence::pair;
@@ -185,7 +184,7 @@ fn parse_reference_static<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<
 
 fn parse_reference_dynamic<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], Reference, ParseErr> {
     let (input, name) = consume_id(input)?;
-    let mut refpath = Reference::Id(name.to_string());
+    let refpath = Reference::Id(name.to_string());
 //    parse_vec_size
     Ok((input, refpath))
 }
@@ -295,7 +294,7 @@ fn parse_port<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], Port, 
     let name = name.to_string();
     let (input, _) = consume_punc(":")(input)?;
     let (input, typ) = parse_type(input)?;
-    let (input, info) = try_consume_info(input)?;
+    let (input, _info) = try_consume_info(input)?;
     let port = Port {
         name,
         direction,
@@ -308,7 +307,7 @@ fn parse_module<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], ModD
     let (input, _) = consume_keyword("module")(input)?;
     let (input, id) = consume_id(input)?;
     let (input, _) = consume_punc(":")(input)?;
-    let (input, info) = try_consume_info(input)?;
+    let (input, _info) = try_consume_info(input)?;
     let (input, _) = consume_newline(input)?;
     let (input, _) = consume_indent(input)?;
 
@@ -322,7 +321,7 @@ fn parse_module<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], ModD
         Err(e) => return Err(e),
     };
 
-    let (input, statements) = match many0(
+    let (input, _statements) = match many0(
         map(
             pair(parse_statement, consume_newlines),
             |(stmt, _)| stmt,
@@ -360,14 +359,14 @@ pub fn parse_decl<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], De
 }
 
 pub fn parse<'a>(input: &[Tok<'a>]) -> anyhow::Result<Circuit> {
-    let (input, version) = tok_version(input)?;
+    let (input, _version) = tok_version(input)?;
     let (input, _) = consume_newline(input)?;
     let (input, _) = consume_keyword("circuit")(input)?;
     let (input, top) = consume_id(input)?;
     let top = top.to_string();
     let (input, _) = consume_punc(":")(input)?;
 
-    let (input, info) = try_consume_info(input)?;
+    let (input, _info) = try_consume_info(input)?;
 
     let (input, _) = consume_newline(input)?;
     let (input, _) = consume_indent(input)?;

@@ -20,10 +20,10 @@ fn parse_expr_primop<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>],
     let (primop_name, _) = consume_id(input)?;
     eprintln!("Primop: {primop_name:?}");
     let (input, _) = consume_punc("(")(input)?;
-    let (input, exprs) = separated_list0(consume_punc(","), parse_expr)(input)?;
+    let (input, _exprs) = separated_list0(consume_punc(","), parse_expr)(input)?;
     if let Some(Tok::Punc(",")) = input.get(0) {
         let (input, _) = consume_punc(",")(input)?;
-        let (input, vs) = separated_list0(consume_punc(","), consume_lit)(input)?;
+        let (_input, _vs) = separated_list0(consume_punc(","), consume_lit)(input)?;
     }
     let (input, _) = consume_punc(")")(input)?;
     Ok((input, Expr::Var("asdf".into())))
@@ -32,11 +32,11 @@ fn parse_expr_primop<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>],
 fn parse_expr_lit<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], Expr, ParseErr> {
     eprintln!("parse_expr_lit()");
     let (input, _) = consume_keyword("UInt")(input)?;
-    let (input, width) = opt(parse_width)(input)?;
+    let (input, _width) = opt(parse_width)(input)?;
     let (input, _) = consume_punc("(")(input)?;
-    let (input, v) = alt((
+    let (input, _v) = alt((
          consume_lit,
-         |i| { consume_id(i).map(|(r, t)| (r, 0)) },
+         |i| { consume_id(i).map(|(r, _t)| (r, 0)) },
     ))(input)?;
     let (input, _) = consume_punc(")")(input)?;
     Ok((input, Expr::Var("asdf".into())))

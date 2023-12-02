@@ -162,7 +162,7 @@ fn parse_token_ident<'a>(input: &'a str) -> IResult<&str, Tok<'a>, ()> {
 
 fn parse_token_lit_num<'a>(input: &'a str) -> IResult<&str, Tok<'a>, ()> {
     let orig_input = &input;
-    let (input, leading_digit) = satisfy(|ch| ch.is_numeric())(input)?;
+    let (input, _leading_digit) = satisfy(|ch| ch.is_numeric())(input)?;
     let (input, number) = many0(satisfy(|ch| ch.is_alphanumeric()))(input)?;
     let len = number.len();
     let number_str = &orig_input[..len];

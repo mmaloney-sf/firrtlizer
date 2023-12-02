@@ -15,10 +15,19 @@ pub fn parse_statement<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>
 
 fn parse_circuit_component<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], Statement, ParseErr> {
     let (input, circuit_component) = alt((
+        parse_circuit_component_wire,
         parse_circuit_component_node,
         parse_circuit_component_reg,
     ))(input)?;
     Ok((input, Statement::CircuitComponent(circuit_component)))
+}
+
+fn parse_circuit_component_wire<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], CircuitComponent, ParseErr> {
+    let (input, _) = consume_keyword("wire")(input)?;
+    let (input, name) = consume_id(input)?;
+    let (input, _) = consume_punc(":")(input)?;
+    let (input, typ) = parse_type(input)?;
+    Ok((input, CircuitComponent::Wire(name.to_string(), typ)))
 }
 
 fn parse_circuit_component_node<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], CircuitComponent, ParseErr> {
@@ -40,7 +49,7 @@ fn parse_circuit_component_reg_reg<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<
     let (input, _) = consume_keyword("reg")(input)?;
     let (input, name) = consume_id(input)?;
     let (input, _) = consume_punc(":")(input)?;
-    let (input, typ) = parse_type(input)?;
+    let (input, _typ) = parse_type(input)?;
     let (input, _) = consume_punc(",")(input)?;
     let (input, clock) = parse_expr(input)?;
     Ok((input, CircuitComponent::Node(name.to_string(), Box::new(clock)))) // TODO
@@ -50,23 +59,14 @@ fn parse_circuit_component_reg_regreset<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IRe
     let (input, _) = consume_keyword("regreset")(input)?;
     let (input, name) = consume_id(input)?;
     let (input, _) = consume_punc(":")(input)?;
-    let (input, typ) = parse_type(input)?;
+    let (input, _typ) = parse_type(input)?;
     let (input, _) = consume_punc(",")(input)?;
     let (input, clock) = parse_expr(input)?;
     let (input, _) = consume_punc(",")(input)?;
-    let (input, reset) = parse_expr(input)?;
+    let (input, _reset) = parse_expr(input)?;
     let (input, _) = consume_punc(",")(input)?;
-    let (input, reset_val) = parse_expr(input)?;
+    let (input, _reset_val) = parse_expr(input)?;
     Ok((input, CircuitComponent::Node(name.to_string(), Box::new(clock)))) // TODO
-}
-
-fn parse_statement_wire<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], CircuitComponent, ParseErr> {
-    let (input, _) = consume_keyword("wire")(input)?;
-    let (input, name) = consume_id(input)?;
-    let (input, _) = consume_punc(":")(input)?;
-    let (input, typ) = parse_type(input)?;
-    let (input, _info) = try_consume_info(input)?;
-    Ok((input, CircuitComponent::Wire(name.to_string(), typ)))
 }
 
 fn parse_connectlike<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], Statement, ParseErr> {

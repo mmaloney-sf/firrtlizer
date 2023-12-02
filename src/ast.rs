@@ -1,7 +1,3 @@
-use std::collections::HashMap;
-use super::*;
-//use super::typecheck::Context;
-
 mod methods;
 pub use methods::*;
 
@@ -11,7 +7,7 @@ pub type ModId = String;
 macro_rules! unused {
     ($name:ident) => {
         #[doc=stringify!(GRAMMAR $name)]
-        #[allow(non_camel_case_types)]
+        #[allow(non_camel_case_types, dead_code)]
         struct $name;
     }
 }

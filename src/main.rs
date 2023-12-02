@@ -1,8 +1,7 @@
-mod tests;
-
 use firrtlizer::tokenizer::Tok;
 use firrtlizer::tokenizer::tokenize;
-use firrtlizer::parser::{parse, parse_decl};
+//use firrtlizer::parser::parse;
+use firrtlizer::parser::parse_decl;
 
 fn main() {
     let argv: Vec<String> = std::env::args().collect();
@@ -21,7 +20,7 @@ fn main() {
 //    dbg!(circuit);
 }
 
-fn print_toks(toks: &[Tok]) {
+pub fn print_toks(toks: &[Tok]) {
     for tok in toks {
         println!("{tok:?} ");
     }

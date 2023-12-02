@@ -83,7 +83,7 @@ impl ModDef {
 
 
 impl From<&str> for Reference {
-    fn from(s: &str) -> Reference {
+    fn from(_s: &str) -> Reference {
         todo!()
     }
 }
