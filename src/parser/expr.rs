@@ -37,7 +37,6 @@ fn parse_expr_lit<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], Ex
          |i| { consume_id(i).map(|(r, t)| (r, 0)) },
     ))(input)?;
     let (input, _) = consume_punc(")")(input)?;
-    eprintln!("done");
     Ok((input, Expr::Var("asdf".into())))
 }
 
@@ -51,7 +50,6 @@ fn test_parse_expr_lit() {
     let typ = r#"UInt<1>(0h0)"#;
     let toks: Vec<Tok> = crate::tokenizer::tokenize(typ).unwrap();
     let toks = &toks[..toks.len()-1];
-    eprintln!("{toks:?}");
     parse_expr(toks).unwrap();
 }
 

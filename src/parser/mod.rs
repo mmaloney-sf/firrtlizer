@@ -314,7 +314,7 @@ fn parse_module<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], ModD
         Err(e) => return Err(e),
     };
 
-    let (input, _) = consume_dedent(input)?;
+//    let (input, _) = consume_dedent(input)?;
 
     let moddef = ModDef {
         name: id.to_string(),

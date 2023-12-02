@@ -24,7 +24,6 @@ fn parse_circuit_component<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok
 
 fn parse_circuit_component_node<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], Statement, ParseErr> {
     eprintln!("parse_circuit_component_node");
-    eprintln!("INPUT: {:?}", &input[..15]);
     let (input, _) = consume_keyword("node")(input)?;
     let (input, name) = consume_id(input)?;
     let (input, _) = consume_punc("=")(input)?;
@@ -50,4 +49,13 @@ fn parse_statement_connect_old<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b 
     let (input, expr) = parse_expr(input)?;
     let (input, info) = try_consume_info(input)?;
     Ok((input, Statement::Connect(refpath, Box::new(expr))))
+}
+
+#[test]
+fn test_parse_circuit_component_node() {
+    let typ = "node _childClock_T = asClock(UInt<1>(0h0))";
+    let toks: Vec<Tok> = crate::tokenizer::tokenize(typ).unwrap();
+    let toks = &toks[..toks.len()-1];
+    dbg!(&toks);
+    parse_circuit_component_node(toks).unwrap();
 }

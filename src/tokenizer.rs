@@ -162,10 +162,15 @@ fn parse_token_ident<'a>(input: &'a str) -> IResult<&str, Tok<'a>, ()> {
 
 fn parse_token_lit_num<'a>(input: &'a str) -> IResult<&str, Tok<'a>, ()> {
     let orig_input = &input;
-    let (input, number) = many1(satisfy(|ch| ch.is_numeric()))(input)?;
+    let (input, leading_digit) = satisfy(|ch| ch.is_numeric())(input)?;
+    let (input, number) = many0(satisfy(|ch| ch.is_alphanumeric()))(input)?;
     let len = number.len();
     let number_str = &orig_input[..len];
-    let token = Tok::Lit(number_str.parse().unwrap());
+    let token = if let Ok(v) = number_str.parse() {
+        Tok::Lit(v)
+    } else {
+        Tok::Lit(u64::MAX)
+    };
     Ok((input, token))
 }
 
