@@ -1,4 +1,5 @@
 use super::*;
+/*
 
 #[derive(Debug, Clone)]
 pub enum TypeError {
@@ -86,3 +87,4 @@ impl Context<Type> {
         }
     }
 }
+*/

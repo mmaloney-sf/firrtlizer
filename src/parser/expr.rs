@@ -2,8 +2,6 @@ use super::*;
 use crate::Expr;
 use nom::IResult;
 use nom::branch::alt;
-use crate::RefPath;
-use crate::Value;
 
 pub(crate) fn parse_expr<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], Expr, ParseErr> {
     alt((
@@ -34,7 +32,7 @@ fn parse_expr_primop<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>],
 fn parse_expr_lit<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], Expr, ParseErr> {
     eprintln!("parse_expr_lit()");
     let (input, _) = consume_keyword("UInt")(input)?;
-    let (input, width) = opt(parse_expr_width)(input)?;
+    let (input, width) = opt(parse_width)(input)?;
     let (input, _) = consume_punc("(")(input)?;
     let (input, v) = alt((
          consume_lit,
@@ -42,6 +40,13 @@ fn parse_expr_lit<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], Ex
     ))(input)?;
     let (input, _) = consume_punc(")")(input)?;
     Ok((input, Expr::Var("asdf".into())))
+}
+
+fn parse_width<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], Width, ParseErr> {
+    let (input, _) = consume_punc("<")(input)?;
+    let (input, width) = consume_lit(input)?;
+    let (input, _) = consume_punc(">")(input)?;
+    Ok((input, width as usize)) // TODO
 }
 
 #[test]
@@ -55,11 +60,4 @@ fn test_parse_expr_lit() {
     let toks: Vec<Tok> = crate::tokenizer::tokenize(typ).unwrap();
     let toks = &toks[..toks.len()-1];
     parse_expr(toks).unwrap();
-}
-
-fn parse_expr_width<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], Expr, ParseErr> {
-    let (input, _) = consume_punc("<")(input)?;
-    let (input, v) = consume_lit(input)?;
-    let (input, _) = consume_punc(">")(input)?;
-    Ok((input, Expr::Lit(Value::UInt(0, v))))
 }

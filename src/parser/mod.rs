@@ -1,5 +1,6 @@
 pub mod statement;
 pub mod expr;
+use super::*;
 
 use nom::IResult;
 use nom::combinator::{value, eof, opt, map};
@@ -9,7 +10,6 @@ use nom::sequence::pair;
 use nom::error::ParseError;
 
 use crate::tokenizer::Tok;
-use crate::RefPath;
 use crate::ast::*;
 use crate::{Direction, Type, BundleField, Flippedness};
 pub use statement::parse_statement;
@@ -150,7 +150,7 @@ fn parse_extmodule(input: &[Tok<'a>]) -> IResult<&[Tok<'a>], Tok, Error> { todo!
 fn parse_intmodule(input: &[Tok<'a>]) -> IResult<&[Tok<'a>], Tok, Error> { todo!() }
 */
 
-fn parse_reference<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], RefPath, ParseErr> {
+fn parse_reference<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], Reference, ParseErr> {
     let (input, refpath) = alt((
         parse_reference_static,
         parse_reference_dynamic,
@@ -158,22 +158,22 @@ fn parse_reference<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], R
     Ok((input, refpath))
 }
 
-fn parse_reference_static<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], RefPath, ParseErr> {
+fn parse_reference_static<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], Reference, ParseErr> {
     let (mut input, name) = consume_id(input)?;
-    let mut refpath = RefPath::Id(name.to_string());
+    let mut refpath = Reference::Id(name.to_string());
 
     loop {
         if let Some(Tok::Punc(".")) = input.get(0) {
             let (rest, _) = consume_punc(".")(input)?;
             let (rest, name) = consume_id(rest)?;
             input = rest;
-            refpath = RefPath::Dot(Box::new(refpath), name.to_string());
+            refpath = Reference::Dot(Box::new(refpath), name.to_string());
         } else if let Some(Tok::Punc("[")) = input.get(0) {
             let (rest, _) = consume_punc("[")(input)?;
             let (rest, idx) = consume_lit(rest)?;
             let (rest, _) = consume_punc("]")(rest)?;
             input = rest;
-            refpath = RefPath::Index(Box::new(refpath), idx as isize);
+            refpath = Reference::Index(Box::new(refpath), idx as usize);
         } else {
             break;
         }
@@ -183,9 +183,9 @@ fn parse_reference_static<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<
     Ok((input, refpath))
 }
 
-fn parse_reference_dynamic<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], RefPath, ParseErr> {
+fn parse_reference_dynamic<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], Reference, ParseErr> {
     let (input, name) = consume_id(input)?;
-    let mut refpath = RefPath::Id(name.to_string());
+    let mut refpath = Reference::Id(name.to_string());
 //    parse_vec_size
     Ok((input, refpath))
 }
@@ -345,6 +345,7 @@ fn parse_module<'a: 'b, 'b>(input: &'b [Tok<'a>]) -> IResult<&'b [Tok<'a>], ModD
 //    let (input, _) = consume_dedent(input)?;
 
     let moddef = ModDef {
+        is_public: false, // TODO
         name: id.to_string(),
         ports,
         statements,

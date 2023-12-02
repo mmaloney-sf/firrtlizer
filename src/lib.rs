@@ -3,6 +3,9 @@ pub mod tokenizer;
 pub mod typecheck;
 pub mod ast;
 
+use ast::*;
+
+/*
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Type {
     UInt(Option<u64>),
@@ -18,22 +21,6 @@ pub enum Type {
     Bundle(Vec<BundleField>),
 }
 
-#[derive(Debug, Clone, Copy, Eq, PartialEq)]
-pub enum Flippedness {
-    Aligned,
-    Flipped,
-}
-
-pub type Fieldname = String;
-
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct BundleField(pub Flippedness, pub Fieldname, Box<Type>);
-
-#[derive(Debug, Clone, Copy, Eq, PartialEq)]
-pub enum Direction {
-    Input,
-    Output,
-}
 
 #[derive(Debug, Clone)]
 pub enum Component {
@@ -66,15 +53,6 @@ pub enum RefPath {
     Dot(Box<RefPath>, String),
     Index(Box<RefPath>, isize),
     DynIndex(Box<RefPath>, Box<Expr>),
-}
-
-#[derive(Debug, Clone)]
-pub enum Expr {
-    Lit(Value),
-    Var(RefPath),
-    Mux(Box<Expr>, Box<Expr>, Box<Expr>),
-    Op(Op, Vec<Expr>),
-    // Read() // todo!()
 }
 
 impl Type {
@@ -206,3 +184,4 @@ impl From<&str> for RefPath {
         RefPath::Id(s.to_string())
     }
 }
+*/
