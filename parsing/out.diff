@@ -1,0 +1,108 @@
+diff --git a/parsing/src/main.rs b/parsing/src/main.rs
+index f8955e6..22c93e2 100644
+--- a/parsing/src/main.rs
++++ b/parsing/src/main.rs
+@@ -209,83 +209,73 @@ fn main() {
+     let grammar = Grammar {
+         symbols: vec![
+             SymbolData {
+-                name: "S".to_string(),  // 0
++                name: "E".to_string(),  // 0
+                 kind: SymbolKind::Nonterminal,
+             },
+             SymbolData {
+-                name: "E".to_string(),  // 1
++                name: "T".to_string(),  // 1
+                 kind: SymbolKind::Nonterminal,
+             },
+             SymbolData {
+-                name: "T".to_string(),  // 2
++                name: "F".to_string(),  // 2
+                 kind: SymbolKind::Nonterminal,
+             },
+             SymbolData {
+-                name: "F".to_string(),  // 3
+-                kind: SymbolKind::Nonterminal,
+-            },
+-            SymbolData {
+-                name: "id".to_string(), // 4
++                name: "id".to_string(), // 3
+                 kind: SymbolKind::Terminal,
+             },
+             SymbolData {
+-                name: "(".to_string(),  // 5
++                name: "(".to_string(),  // 4
+                 kind: SymbolKind::Terminal,
+             },
+             SymbolData {
+-                name: ")".to_string(),  // 6
++                name: ")".to_string(),  // 5
+                 kind: SymbolKind::Terminal,
+             },
+             SymbolData {
+-                name: "+".to_string(),  // 7
++                name: "+".to_string(),  // 6
+                 kind: SymbolKind::Terminal,
+             },
+             SymbolData {
+-                name: "*".to_string(),  // 8
++                name: "*".to_string(),  // 7
+                 kind: SymbolKind::Terminal,
+             },
+         ],
+         rules: vec![
+-            // 0.   S -> E
+-            RuleData {
+-                lhs: 0,
+-                rhs: vec![1],
+-            },
+-
+             // 1.   E -> E + T
+             RuleData {
+-                lhs: 1,
+-                rhs: vec![1, 7, 2],
++                lhs: 0,
++                rhs: vec![0, 6, 1],
+             },
+ 
+             // 2.   E -> T
+             RuleData {
+-                lhs: 1,
+-                rhs: vec![2],
++                lhs: 0,
++                rhs: vec![1],
+             },
+ 
+             // 3.   T -> T * F
+             RuleData {
+-                lhs: 2,
+-                rhs: vec![2, 8, 3],
++                lhs: 1,
++                rhs: vec![1, 7, 2],
+             },
+ 
+             // 4.   T -> F
+             RuleData {
+-                lhs: 2,
+-                rhs: vec![3],
++                lhs: 1,
++                rhs: vec![2],
+             },
+ 
+             // 5.   F -> ( E )
+             RuleData {
+-                lhs: 3,
+-                rhs: vec![5, 1, 6],
++                lhs: 2,
++                rhs: vec![4, 0, 5],
+             },
+ 
+             // 6.   F -> id
+             RuleData {
+-                lhs: 3,
+-                rhs: vec![4],
++                lhs: 2,
++                rhs: vec![3],
+             },
+         ],
+     };
