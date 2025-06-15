@@ -129,6 +129,7 @@ impl<'a> Symbol<'a> {
     }
 
     pub fn firsts(&self) -> HashSet<Symbol<'a>> {
+        eprintln!("{self:?}.firsts()");
         let mut excepts = HashSet::new();
         excepts.insert(*self);
         self.firsts_except(&excepts)
