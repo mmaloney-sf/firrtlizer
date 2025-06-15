@@ -47,7 +47,7 @@ SymbolExpr: SymbolExpr = {
         SymbolExpr::Star(Box::new(s))
     },
     "(" <s:RuleRhs> ")" => {
-        s
+        SymbolExpr::Group(Box::new(s))
     },
 };
 
