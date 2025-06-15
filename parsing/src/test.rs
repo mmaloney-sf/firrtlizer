@@ -47,7 +47,6 @@ fn test_first_with_empty() {
         .symbol("A")
         .symbol("B")
         .symbol("x")
-        .symbol("x")
         .rule("A", &["x"])
         .rule("A", &[])
         .rule("B", &["A", "x"])
@@ -68,7 +67,6 @@ fn test_first_left_recursion() {
         .symbol("A")
         .symbol("B")
         .symbol("x")
-        .symbol("x")
         .rule("A", &["x"])
         .rule("A", &["A", "x"])
         .build();
@@ -85,7 +83,6 @@ fn test_first_mutual_recursion() {
     let grammar = Grammar::new()
         .symbol("A")
         .symbol("B")
-        .symbol("x")
         .symbol("x")
         .rule("A", &["x"])
         .rule("A", &["B"])
