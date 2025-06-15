@@ -94,6 +94,10 @@ impl<'a> Rule<'a> {
     pub fn index(&self) -> usize {
         self.1
     }
+
+    pub fn name(&self) -> String {
+        format!("{self:?}")
+    }
 }
 
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -134,38 +138,97 @@ impl<'a> Symbol<'a> {
         self.grammar.symbols[self.index].name.as_str()
     }
 
-    pub fn firsts(&self) -> Vec<Symbol<'a>> {
-        todo!()
+    pub fn is_nullable(&self) -> bool {
+        self.grammar.nullables().contains(self)
     }
 
-    pub fn follows(&self) -> Vec<Symbol<'a>> {
-        if self.is_terminal() {
-            return vec![];
-        }
+    pub fn firsts(&self) -> HashSet<Symbol<'a>> {
+        let mut excepts = HashSet::new();
+        excepts.insert(*self);
+        self.firsts_except(&excepts)
+    }
 
+    fn firsts_except(&self, excepts: &HashSet<Symbol<'a>>) -> HashSet<Symbol<'a>> {
         let mut result = HashSet::new();
+
+        let mut nonterminals = HashSet::new();
+
         for rule in self.grammar.rules() {
-            for window in rule.rhs().windows(2) {
-                let [sym, follow] = window else { unreachable!() };
-                if sym == self {
-                    match follow.kind() {
-                        SymbolKind::Terminal => {
-                            result.insert(*follow);
-                        }
-                        SymbolKind::Nonterminal => {
-                            result.extend(follow.follows().into_iter());
-                        }
+            if rule.lhs() == *self {
+                if let Some(symbol) = rule.rhs().first() {
+                    if symbol.is_terminal() {
+                        result.insert(*symbol);
+                    } else {
+                        nonterminals.insert(*symbol);
                     }
                 }
             }
+        }
 
+        let mut new_excepts = excepts.clone();
+        new_excepts.insert(*self);
+
+        for nonterminal in nonterminals {
+            if !excepts.contains(&nonterminal) {
+                result.extend(nonterminal.firsts_except(&new_excepts));
+
+            }
+        }
+
+        if self.is_nullable() {
+            result.extend(self.follows_except(&new_excepts));
+        }
+
+        result
+    }
+
+    pub fn follows(&self) -> HashSet<Symbol<'a>> {
+        let mut excepts = HashSet::new();
+        excepts.insert(*self);
+        self.follows_except(&excepts)
+    }
+
+    pub fn follows_except(&self, excepts: &HashSet<Symbol<'a>>) -> HashSet<Symbol<'a>> {
+        let mut result = HashSet::new();
+
+        let mut nonterminals = HashSet::new();
+
+        for rule in self.grammar.rules() {
             let rhs = rule.rhs();
-            if let Some(last) = rhs.last() {
+            if rhs.is_empty() {
+                nonterminals.insert(rule.lhs());
+            } else {
+                for window in rhs.windows(2) {
+                    let &[sym, follow] = window else { unreachable!() };
+
+                    if *self == sym {
+                        if follow.is_terminal() {
+                            result.insert(follow);
+                        } else {
+                            nonterminals.insert(follow);
+                        }
+                    }
+                }
+                let last = rhs.last().unwrap();
+
                 if last == self {
-                    result.extend(rule.lhs().follows().into_iter());
+                    nonterminals.insert(rule.lhs());
                 }
             }
         }
+
+        let mut new_excepts = excepts.clone();
+        new_excepts.insert(*self);
+
+        for nonterminal in nonterminals {
+            if !excepts.contains(&nonterminal) {
+                result.extend(nonterminal.firsts());
+                if nonterminal.is_nullable() {
+                    result.extend(nonterminal.follows_except(&new_excepts));
+                }
+            }
+        }
+
         result.into_iter().collect()
     }
 }
@@ -341,7 +404,7 @@ impl<'a> Item<'a> {
 }
 
 impl<'a> ItemSet<'a> {
-    pub(crate) fn singleton(item: Item<'a>) -> ItemSet<'a> {
+    pub fn singleton(item: Item<'a>) -> ItemSet<'a> {
         let itemset = ItemSet(item.grammar(), vec![item]);
         itemset.closure()
     }
@@ -480,5 +543,26 @@ impl Grammar {
         }
         rules
     }
-}
 
+    pub fn nullables(&self) -> HashSet<Symbol> {
+        let mut nullables = HashSet::new();
+
+        loop {
+            let mut dirty = false;
+
+            for rule in self.rules() {
+                if !nullables.contains(&rule.lhs()) {
+                    if rule.rhs().iter().all(|symbol| nullables.contains(symbol)) {
+                        nullables.insert(rule.lhs());
+                        dirty = true;
+                    }
+                }
+            }
+
+            if !dirty {
+                break;
+            }
+        }
+        nullables
+    }
+}

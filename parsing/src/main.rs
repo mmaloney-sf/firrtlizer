@@ -1,6 +1,4 @@
-mod grammar;
-
-use grammar::*;
+use parsing::*;
 
 use std::{any::Any, collections::{HashMap, HashSet}, ops::Deref, rc::Rc};
 
@@ -51,7 +49,9 @@ pub enum Action<'a> {
 }
 
 impl<'a> ParseTable<'a> {
+    #[tracing::instrument(skip_all)]
     pub fn new(grammar: &'a Grammar) -> ParseTable<'a> {
+        tracing::info!("Here");
         let states = Self::build_states(&grammar);
         let actions = Self::build_actions(&grammar, &states);
 
@@ -98,6 +98,8 @@ impl<'a> ParseTable<'a> {
 
         for (src_state_index, src_state) in states.iter().enumerate() {
             for src_item in src_state.items() {
+//                let spn = tracing::span!(target="FOO", tracing::Level::INFO, "state", state=src_state_index);
+//                tracing::event!(tracing::Level::INFO, state = src_state_index, "State = {src_state_index}");
                 match src_item.next_symbol() {
                     Some(symbol) => {
                         let dst_state = src_state.follow(symbol);
@@ -117,6 +119,9 @@ impl<'a> ParseTable<'a> {
                         // End of input
                         let mut actions = actions.get_mut(&(src_state_index, None)).unwrap();
                         actions.push(Action::Reduce(src_item.rule()));
+                        if src_state_index == 7 {
+                            tracing::info!("actions: {actions:?}");
+                        }
                     }
                 }
             }
@@ -138,18 +143,20 @@ impl<'a> ParseTable<'a> {
 
 pub struct Machine<'a, 'b> {
     parse_table: &'b ParseTable<'a>,
-    head: Option<Symbol<'a>>,
+    head: Vec<Symbol<'a>>,
     stack: Vec<(StateIndex, Symbol<'a>)>,
     halted: bool,
+    step: usize,
 }
 
 impl<'a, 'b> Machine<'a, 'b> {
     pub fn new(parse_table: &'b ParseTable<'a>) -> Machine<'a, 'b> {
         Machine {
             parse_table,
-            head: None,
+            head: vec![],
             stack: vec![],
             halted: false,
+            step: 0,
         }
     }
 
@@ -160,9 +167,14 @@ impl<'a, 'b> Machine<'a, 'b> {
     fn step(&mut self, symbol: Option<Symbol<'a>>) {
         let state = self.state();
 
+        eprintln!("STEP:   {:?}", self.step);
         eprintln!("SYMBOL: {:?}", symbol);
-        eprintln!("STATE: {:?}", state);
-        eprintln!("STACK: {:?}", &self.stack);
+        eprintln!("STACK:  {:?}", &self.stack);
+        eprintln!("STATE:  {:?}", state);
+        let state_rep = format!("{:?}", &self.parse_table.states[state]);
+        for line in state_rep.lines() {
+            eprintln!("    {line}");
+        }
 
         let actions = &self.parse_table.actions.get(&(state, symbol));
 
@@ -177,14 +189,19 @@ impl<'a, 'b> Machine<'a, 'b> {
                 }
                 Action::Reduce(rule) => {
                     eprintln!("ACTION: REDUCE {:?}", rule);
+
+                    self.head.insert(0, rule.lhs());
+
+                    if let Some(symbol) = symbol {
+                        self.head.insert(0, symbol);
+                    }
+
                     let mut children = vec![];
+
                     for _ in 0..rule.rhs().len() {
                         let Some((_state, sym)) = self.stack.pop() else { panic!() };
                         children.insert(0, sym);
                     }
-                    //let node = self.on_reduce(rule, children);
-                    assert!(self.head.is_none());
-                    self.head = Some(rule.lhs());
                 }
                 Action::Halt => {
                     eprintln!("ACTION: HALT");
@@ -193,11 +210,12 @@ impl<'a, 'b> Machine<'a, 'b> {
             }
         }
         eprintln!();
+        self.step += 1;
     }
 
     fn run(&mut self, input: &mut impl Iterator<Item=Symbol<'a>>) {
         while !self.halted {
-            if let Some(symbol) = self.head.take() {
+            if let Some(symbol) = self.head.pop() {
                 self.step(Some(symbol));
             } else {
                 let symbol = input.next();
@@ -208,10 +226,23 @@ impl<'a, 'b> Machine<'a, 'b> {
 }
 
 fn main() {
+    let file = std::fs::File::create("log.txt").expect("Could not create log file");
+//    let writer = BufWriter::new(file);
+
+    let subscriber = tracing_subscriber::FmtSubscriber::builder()
+//        .with_max_level(tracing::Level::TRACE)
+//        .with_span_events(tracing_subscriber::fmt::format::FmtSpan::FULL)
+        .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
+//        .with_writer(std::io::stderr)
+        .with_writer(file)
+        .finish();
+
+    tracing::subscriber::set_global_default(subscriber).unwrap();
+
     let grammar = Grammar::new()
         .nonterminal("start")
         .nonterminal("circuit")
-        .nonterminal("{ decl }")
+        .nonterminal("{decl}")
         .nonterminal("decl")
 
         .terminal("KW_CIRCUIT")
@@ -230,12 +261,14 @@ fn main() {
 
         .rule("start", &["circuit"])
         .rule("circuit", &["VERSION", "NEWLINE", "KW_CIRCUIT", "ID", "INFO", "COLON", "NEWLINE", "INDENT", "DEDENT"])
-        .rule("circuit", &["VERSION", "NEWLINE", "KW_CIRCUIT", "ID", "COLON", "NEWLINE", "INDENT", "{ decl }", "DEDENT"])
-        .rule("{ decl }", &[])
-        .rule("{ decl }", &["{ decl }", "decl"])
-        .rule("decl", &["KW_MODULE"])
+        .rule("circuit", &["VERSION", "NEWLINE", "KW_CIRCUIT", "ID", "COLON", "NEWLINE", "INDENT", "{decl}", "DEDENT"])
+        .rule("{decl}", &[])
+        .rule("{decl}", &["{decl}", "decl"])
+        .rule("decl", &["KW_MODULE", "ID", "COLON", "NEWLINE", "INDENT", "ID", "NEWLINE", "DEDENT"])
 
         .build();
+
+    tracing::info!("Built grammar");
 
 //    circuit = version , newline ,
 //"circuit" , id , ":" , [ annotations ] , [ info ] , newline , indent ,
@@ -246,7 +279,21 @@ fn main() {
     eprintln!("{grammar:?}");
     eprintln!();
 
+    tracing::info!("Nullables");
+    eprintln!("Nullables: {:?}", grammar.nullables());
+
     let table = ParseTable::new(&grammar);
+
+    eprintln!("Parse Table");
+    for state in 0..table.states.len() {
+        eprintln!("    State {state}");
+        for symbol in table.grammar.symbols() {
+            eprintln!("        on {symbol} => {:?}", &table.actions[&(state, Some(symbol))]);
+        }
+        eprintln!("        on $ => {:?}", &table.actions[&(state, None)]);
+        eprintln!();
+    }
+    eprintln!();
 
     let source = std::fs::read_to_string(&std::env::args().skip(1).next().unwrap()).unwrap();
 
