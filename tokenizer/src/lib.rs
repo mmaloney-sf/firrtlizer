@@ -49,6 +49,12 @@ pub enum LexToken {
     KwCircuit,
     #[token(r"module")]
     KwModule,
+    #[token(r"skip")]
+    KwSkip,
+    #[token(r"input")]
+    KwInput,
+    #[token(r"output")]
+    KwOutput,
 
     #[regex(r"(\w+|`[^`]+`)")]
     Id,

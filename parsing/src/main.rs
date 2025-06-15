@@ -49,7 +49,6 @@ pub enum Action<'a> {
 }
 
 impl<'a> ParseTable<'a> {
-    #[tracing::instrument(skip_all)]
     pub fn new(grammar: &'a Grammar) -> ParseTable<'a> {
         tracing::info!("Here");
         let states = Self::build_states(&grammar);
@@ -240,31 +239,34 @@ fn main() {
     tracing::subscriber::set_global_default(subscriber).unwrap();
 
     let grammar = Grammar::new()
-        .nonterminal("start")
-        .nonterminal("circuit")
-        .nonterminal("{decl}")
-        .nonterminal("decl")
+        .symbol("start")
+        .symbol("circuit")
+        .symbol("{decl}")
+        .symbol("decl")
 
-        .terminal("KW_CIRCUIT")
-        .terminal("KW_MODULE")
-        .terminal("NEWLINE")
-        .terminal("DEDENT")
-        .terminal("INDENT")
-        .terminal("VERSION")
-        .terminal("ID")
-        .terminal("INFO")
-        .terminal("COMMA")
-        .terminal("COLON")
-        .terminal("EQ")
-        .terminal("DOT")
-        .terminal("STRING")
+        .symbol("KW_CIRCUIT")
+        .symbol("KW_MODULE")
+        .symbol("KW_SKIP")
+        .symbol("KW_INPUT")
+        .symbol("KW_OUTPUT")
+        .symbol("NEWLINE")
+        .symbol("DEDENT")
+        .symbol("INDENT")
+        .symbol("VERSION")
+        .symbol("ID")
+        .symbol("INFO")
+        .symbol("COMMA")
+        .symbol("COLON")
+        .symbol("EQ")
+        .symbol("DOT")
+        .symbol("STRING")
 
         .rule("start", &["circuit"])
         .rule("circuit", &["VERSION", "NEWLINE", "KW_CIRCUIT", "ID", "INFO", "COLON", "NEWLINE", "INDENT", "DEDENT"])
         .rule("circuit", &["VERSION", "NEWLINE", "KW_CIRCUIT", "ID", "COLON", "NEWLINE", "INDENT", "{decl}", "DEDENT"])
         .rule("{decl}", &[])
         .rule("{decl}", &["{decl}", "decl"])
-        .rule("decl", &["KW_MODULE", "ID", "COLON", "NEWLINE", "INDENT", "ID", "NEWLINE", "DEDENT"])
+        .rule("decl", &["KW_MODULE", "ID", "COLON", "NEWLINE", "INDENT", "KW_SKIP", "NEWLINE", "DEDENT"])
 
         .build();
 
@@ -326,6 +328,9 @@ fn main() {
                         tokenizer::LexToken::Dot => "DOT",
                         tokenizer::LexToken::String => "STRING",
                         tokenizer::LexToken::KwModule => "KW_MODULE",
+                        tokenizer::LexToken::KwSkip => "KW_SKIP",
+                        tokenizer::LexToken::KwInput => "KW_INPUT",
+                        tokenizer::LexToken::KwOutput => "KW_OUTPUT",
                         tokenizer::LexToken::Comment => unreachable!(),
                     }
                 },

@@ -4,9 +4,9 @@ use super::*;
 #[test]
 fn test_first() {
     let grammar = Grammar::new()
-        .nonterminal("A")
-        .terminal("x")
-        .terminal("y")
+        .symbol("A")
+        .symbol("x")
+        .symbol("y")
         .rule("A", &["x"])
         .rule("A", &["y"])
         .build();
@@ -23,10 +23,10 @@ fn test_first() {
 #[test]
 fn test_empty() {
     let grammar = Grammar::new()
-        .nonterminal("A")
-        .nonterminal("B")
-        .nonterminal("C")
-        .terminal("x")
+        .symbol("A")
+        .symbol("B")
+        .symbol("C")
+        .symbol("x")
         .rule("A", &["x"])
         .rule("A", &[])
         .rule("B", &["A"])
@@ -44,10 +44,10 @@ fn test_empty() {
 #[test]
 fn test_first_with_empty() {
     let grammar = Grammar::new()
-        .nonterminal("A")
-        .nonterminal("B")
-        .terminal("x")
-        .terminal("x")
+        .symbol("A")
+        .symbol("B")
+        .symbol("x")
+        .symbol("x")
         .rule("A", &["x"])
         .rule("A", &[])
         .rule("B", &["A", "x"])
@@ -65,10 +65,10 @@ fn test_first_with_empty() {
 #[test]
 fn test_first_left_recursion() {
     let grammar = Grammar::new()
-        .nonterminal("A")
-        .nonterminal("B")
-        .terminal("x")
-        .terminal("x")
+        .symbol("A")
+        .symbol("B")
+        .symbol("x")
+        .symbol("x")
         .rule("A", &["x"])
         .rule("A", &["A", "x"])
         .build();
@@ -83,10 +83,10 @@ fn test_first_left_recursion() {
 #[test]
 fn test_first_mutual_recursion() {
     let grammar = Grammar::new()
-        .nonterminal("A")
-        .nonterminal("B")
-        .terminal("x")
-        .terminal("x")
+        .symbol("A")
+        .symbol("B")
+        .symbol("x")
+        .symbol("x")
         .rule("A", &["x"])
         .rule("A", &["B"])
         .rule("B", &["A"])
@@ -101,10 +101,10 @@ fn test_first_mutual_recursion() {
 #[test]
 fn test_follow_simple() {
     let grammar = Grammar::new()
-        .nonterminal("A")
-        .nonterminal("B")
-        .terminal("x")
-        .terminal("y")
+        .symbol("A")
+        .symbol("B")
+        .symbol("x")
+        .symbol("y")
         .rule("A", &["x"])
         .rule("B", &["A", "x"])
         .rule("B", &["A", "y"])
@@ -120,12 +120,12 @@ fn test_follow_simple() {
 #[test]
 fn test_follow_nullable() {
     let grammar = Grammar::new()
-        .nonterminal("A")
-        .nonterminal("B")
-        .nonterminal("C")
-        .terminal("x")
-        .terminal("y")
-        .terminal("z")
+        .symbol("A")
+        .symbol("B")
+        .symbol("C")
+        .symbol("x")
+        .symbol("y")
+        .symbol("z")
         .rule("A", &["x"])
         .rule("B", &["A", "y"])
         .rule("B", &["A", "C", "z"])
@@ -143,8 +143,8 @@ fn test_follow_nullable() {
 #[test]
 fn test_first_nullable() {
     let grammar = Grammar::new()
-        .nonterminal("A")
-        .terminal("x")
+        .symbol("A")
+        .symbol("x")
         .rule("A", &["A", "x"])
         .rule("A", &[])
         .build();
@@ -156,26 +156,42 @@ fn test_first_nullable() {
 }
 
 #[test]
+fn test_is_terminal() {
+    let grammar = Grammar::new()
+        .symbol("A")
+        .symbol("x")
+        .rule("A", &["A", "x"])
+        .rule("A", &[])
+        .build();
+
+    let a = grammar.symbol("A").unwrap();
+    let x = grammar.symbol("x").unwrap();
+
+    assert!(!a.is_terminal());
+    assert!(x.is_terminal());
+}
+
+#[test]
 fn foo() {
     let grammar = Grammar::new()
-        .nonterminal("start")
-        .nonterminal("circuit")
-        .nonterminal("{decl}")
-        .nonterminal("decl")
+        .symbol("start")
+        .symbol("circuit")
+        .symbol("{decl}")
+        .symbol("decl")
 
-        .terminal("KW_CIRCUIT")
-        .terminal("KW_MODULE")
-        .terminal("NEWLINE")
-        .terminal("DEDENT")
-        .terminal("INDENT")
-        .terminal("VERSION")
-        .terminal("ID")
-        .terminal("INFO")
-        .terminal("COMMA")
-        .terminal("COLON")
-        .terminal("EQ")
-        .terminal("DOT")
-        .terminal("STRING")
+        .symbol("KW_CIRCUIT")
+        .symbol("KW_MODULE")
+        .symbol("NEWLINE")
+        .symbol("DEDENT")
+        .symbol("INDENT")
+        .symbol("VERSION")
+        .symbol("ID")
+        .symbol("INFO")
+        .symbol("COMMA")
+        .symbol("COLON")
+        .symbol("EQ")
+        .symbol("DOT")
+        .symbol("STRING")
 
         .rule("start", &["circuit"])
         .rule("circuit", &["VERSION", "NEWLINE", "KW_CIRCUIT", "ID", "INFO", "COLON", "NEWLINE", "INDENT", "DEDENT"])

@@ -6,18 +6,9 @@ pub struct GrammarBuilder {
 }
 
 impl GrammarBuilder {
-    pub fn terminal<S: Into<String>>(mut self, name: S) -> Self {
+    pub fn symbol<S: Into<String>>(mut self, name: S) -> Self {
         self.symbols.push(SymbolData {
             name: name.into(),
-            kind: SymbolKind::Terminal,
-        });
-        self
-    }
-
-    pub fn nonterminal<S: Into<String>>(mut self, name: S) -> Self {
-        self.symbols.push(SymbolData {
-            name: name.into(),
-            kind: SymbolKind::Nonterminal,
         });
         self
     }
@@ -64,7 +55,6 @@ pub struct RuleData {
 #[derive(Clone, PartialEq, Eq)]
 pub struct SymbolData {
     pub(crate) name: String,
-    pub(crate) kind: SymbolKind,
 }
 
 #[derive(Clone, Copy)]
@@ -122,16 +112,12 @@ impl<'a> PartialEq for Symbol<'a> {
 impl<'a> Eq for Symbol<'a> {}
 
 impl<'a> Symbol<'a> {
-    pub fn kind(&self) -> SymbolKind {
-        self.grammar.symbols[self.index].kind
-    }
-
     pub fn is_terminal(&self) -> bool {
-        self.kind() == SymbolKind::Terminal
+        !self.grammar.rules().iter().any(|rule| rule.lhs() == *self)
     }
 
     pub fn is_nonterminal(&self) -> bool {
-        self.kind() == SymbolKind::Nonterminal
+        self.grammar.rules().iter().any(|rule| rule.lhs() == *self)
     }
 
     pub fn as_str(&self) -> &str {

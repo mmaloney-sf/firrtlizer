@@ -1,0 +1,353 @@
+(* Circuit Definition *)
+circuit =
+  version , newline ,
+  "circuit" , id , ":" , [ annotations ] , [ info ] , newline , indent ,
+    { decl } ,
+  dedent ;
+
+(* Top-level Declarations *)
+decl =
+    decl_module
+  | decl_extmodule
+  | decl_layer
+  | decl_formal
+  | decl_type_alias ;
+
+decl_module =
+  [ "public" ], "module" , id , { enablelayer } , ":" , [ info ] ,
+    newline , indent ,
+    { port , newline } ,
+    { statement , newline } ,
+  dedent ;
+
+decl_extmodule =
+  "extmodule" , id , ":" , [ info ] , newline , indent ,
+    { port , newline } ,
+    [ "defname" , "=" , id , newline ] ,
+    { "parameter" , id , "=" , type_param , newline } ,
+  dedent ;
+
+decl_layer =
+  "layer" , id , string , ":" , [ info ] , newline , indent ,
+  { decl_layer , newline } ,
+  dedent ;
+
+decl_formal =
+  "formal" , id , "of" , id , ":" , [ info ] , newline , indent ,
+    { id , "=" , decl_formal_param , newline } ,
+  dedent ;
+decl_formal_param =
+    int
+  | string_dq
+  | string_sq
+  | "[" , [ decl_formal_param , { "," , decl_formal_param } ] , "]"
+  | "{" , [ id , "=" , decl_formal_param , { "," , id , "=" , decl_formal_param } ] , "}"
+
+decl_type_alias = "type", id, "=", type ;
+
+port = ( "input" | "output" ) , id , ":" , (type | type_property) , [ info ] ;
+type_param = int | string_dq | string_sq ;
+type_property = "Integer" | "List" , "<" , type_property , ">";
+
+(* Statements *)
+statement =
+    circuit_component
+  | connectlike
+  | conditional
+  | command
+  | layerblock
+  | skip ;
+
+(* Circuit Components *)
+circuit_component =
+    circuit_component_node
+  | circuit_component_wire
+  | circuit_component_reg
+  | circuit_component_inst
+  | circuit_component_mem ;
+
+circuit_component_node = "node" , id , "=" , expr , [ info ] ;
+circuit_component_wire = "wire" , id , ":" , type , [ info ] ;
+circuit_component_inst = "inst" , id , "of" , id , [ info ] ;
+
+circuit_component_reg =
+    "reg" , id , ":" , type , "," , expr , [ info ]
+  | "regreset" , id , ":" , type , "," , expr , "," , expr , "," , expr , [info] ;
+
+circuit_component_mem =
+  "mem" , id , ":" , [ info ] , newline , indent ,
+    "data-type" , "=>" , type , newline ,
+    "depth" , "=>" , int , newline ,
+    "read-latency" , "=>" , int , newline ,
+    "write-latency" , "=>" , int , newline ,
+    "read-under-write" , "=>" , read_under_write , newline ,
+    { "reader" , "=>" , id , newline } ,
+    { "writer" , "=>" , id , newline } ,
+    { "readwriter" , "=>" , id , newline } ,
+  dedent ;
+
+read_under_write =  "old" | "new" | "undefined" ;
+
+(* Connect-like Statements *)
+connectlike =
+    "connect" , reference , "," , expr , [ info ]
+  | "invalidate" , reference , [ info ]
+  | "attach" , "(" , reference , { "," ,  reference } , ")" , [ info ]
+  | "define" , reference_static , "=" , expr_probe , [ info ]
+  | "propassign" , reference_static , "," , property_expr , [ info ] ;
+
+(* Conditional Statements *)
+conditional =
+    conditional_when
+  | conditional_match ;
+
+conditional_when =
+  "when" , expr , ":" [ info ] , newline ,
+    indent , statement, { statement } , dedent ,
+  [ "else" , ":" , indent , statement, { statement } , dedent ] ;
+
+conditional_match =
+  "match" , expr , ":" , [ info ] , newline ,
+  [ indent , { conditional_match_branch } , dedent ] ;
+
+conditional_match_branch =
+  id , [ "(" , id , ")" ] , ":" , newline ,
+  [ indent , { statement } , dedent ] ;
+
+(* Command Statements *)
+command =
+    "stop" , "(" , expr , "," , expr , "," , int , ")" , [ info ]
+  | "force" , "(" , expr , "," , expr , "," , expr_probe , "," , expr , ")"
+  | "force_initial" , "(" , expr_probe , "," , expr , ")"
+  | "release" , "(" , expr , "," , expr , "," , expr_probe , ")"
+  | "release_initial" , "(" , expr_probe , ")"
+  | expr_intrinsic , [ info ]
+  | "printf" , "(" ,
+        expr , "," ,
+        expr , "," ,
+        string_dq ,
+        { "," , expr }
+    , ")" ,
+    [ ":" , id ] , [ info ]
+  | "fprintf" , "(" ,
+        expr , "," ,
+        expr , "," ,
+        string_dq ,
+        { "," , expr } ,
+        "," ,
+        string_dq ,
+        { "," , expr }
+    , ")" ,
+    [ ":" , id ] , [ info ]
+  | "fflush" , "(" ,
+        expr , "," ,
+        expr , [ "," ,
+        string_dq ,
+        { "," , expr } ]
+    , ")" ,
+    [ ":" , id ] , [ info ]
+  | "assert" , "(" ,
+        expr , "," ,
+        expr , "," ,
+        expr , "," ,
+        string_dq ,
+        { "," , expr }
+    , ")" ,
+    [ ":" , id ] , [ info ]
+  | "assume" , "(" ,
+        expr , "," ,
+        expr , "," ,
+        expr , "," ,
+        string_dq ,
+        { "," , expr }
+    , ")" ,
+    [ ":" , id ] , [ info ]
+  | "cover" , "(" ,
+        expr , "," ,
+        expr , "," ,
+        expr , "," ,
+        string_dq
+    , ")" ,
+    [ ":" , id ] , [ info ] ;
+
+(* Layer Block Statement *)
+layerblock =
+  "layerblock" , id , "of" , id , ":" , [ info ] , newline , indent ,
+    { port , newline } ,
+    { statement , newline } ,
+  dedent ;
+
+(* Skip Statement *)
+skip = "skip" , [ info ] ;
+
+(* References *)
+reference =
+    reference_static
+  | reference_dynamic ;
+
+reference_static =
+    id
+  | reference_static , "." , id
+  | reference_static , "[" , int , "]" ;
+
+reference_dynamic =
+    reference , "[" , expr , "]" ;
+
+(* Expressions *)
+expr =
+    expr_reference
+  | expr_lit
+  | expr_enum
+  | expr_mux
+  | expr_read
+  | expr_primop
+  | expr_intrinsic ;
+
+expr_reference = reference ;
+expr_lit = ( "UInt" | "SInt" ) , [ width ] , "(" , ( int | rint ) , ")" ;
+expr_enum = type_enum , "(" , id , [ "," , expr ] , ")" ;
+expr_mux = "mux" , "(" , expr , "," , expr , "," , expr , ")" ;
+expr_read = "read" , "(" , expr_probe , ")" ;
+
+expr_probe =
+  "probe" , "(" , reference_static , ")"
+  "rwprobe" , "(" , reference_static , ")"
+  | reference_static ;
+
+property_literal_expr = "Integer", "(", int, ")" ;
+property_expr = reference_static | property_literal_expr | property_expr_primop ;
+property_expr_primop = property_primop_2expr | property_primop_varexpr;
+expr_primop = primop_2expr | primop_1expr | primop_1expr1int | primop_1expr2int ;
+
+expr_intrinsic = "intrinsic", "(" , id ,
+  [ "<"   , id , "=" , ( int | string_dq ) ,
+    { "," , id , "=" , ( int | string_dq ) } , ">" ] ,
+  [ ":" , type ] ,
+  { "," , expr } , ")"
+
+(* Types *)
+type = ( [ "const" ] , type_hardware ) | type_probe ;
+
+type_hardware =
+    type_ground
+  | type_bundle
+  | type_vec
+  | type_enum
+  | id ;
+
+(* Ground Types *)
+type_ground =  type_ground_nowidth | type_ground_width ;
+
+type_ground_nowidth =
+    "Clock"
+  | "Reset"
+  | "AsyncReset" ;
+
+type_ground_width =
+    "UInt" , [ width ]
+  | "SInt" , [ width ]
+  | "Analog" , [ width ] ;
+
+width = "<" , int , ">" ;
+
+(* Bundle Types *)
+type_bundle = "{" , type_bundle_field , { type_bundle_field } , "}" ;
+type_bundle_field = [ "flip" ] , id , ":" , type ;
+
+(* Vec Types *)
+type_vec = type , "[" , int , "]" ;
+
+(* Enum Types *)
+type_enum = "{|" , { type_enum_alt } , "|}" ;
+type_enum_alt = id, [ ":" , type_constable ] ;
+
+(* Probe Types *)
+type_probe = ( "Probe" | "RWProbe" ) , "<", type , [ "," , id ] ">" ;
+
+(* Primitive Operations *)
+primop_2expr     = primop_2expr_keyword , "(" , expr , "," , expr ")" ;
+primop_1expr     = primop_1expr_keyword , "(" , expr , ")" ;
+primop_1expr1int = primop_1expr1int_keyword , "(", expr , "," , int , ")" ;
+primop_1expr2int = primop_1expr2int_keyword , "(" , expr , "," , int , "," , int , ")" ;
+
+(* Primitive Property Operations *)
+property_primop_2expr = property_primop_2expr_keyword ,
+                          "(" , property_expr , "," , property_expr ")" ;
+property_primop_varexpr = property_primop_varexpr_keyword ,
+                            "(" , { property_expr } , ")" ;
+
+(* Enable Layers *)
+enablelayer = "enablelayer" , id , { "." , id } ;
+
+(* Tokens: Annotations *)
+annotations = "%" , "[" , json_array , "]" ;
+
+(* Tokens: Version *)
+sem_ver = int , "."  , int , "." , int ;
+version = "FIRRTL" , "version" , sem_ver ;
+
+(* Tokens: Whitespace *)
+indent = " " , { " " } ;
+dedent = ? remove one level of indentation ? ;
+newline = ? a newline character ? ;
+
+(* Tokens: Integer Literals *)
+int = [ "-" ] , digit_dec , { digit_dec } ;
+digit_bin = "0" | "1" ;
+digit_oct = digit_bin | "2" | "3" | "4" | "5" | "6" | "7" ;
+digit_dec = digit_oct | "8" | "9" ;
+digit_hex = digit_dec
+          | "A" | "B" | "C" | "D" | "E" | "F"
+          | "a" | "b" | "c" | "d" | "e" | "f" ;
+
+(* Tokens: Radix-specified Integer Literals *)
+rint =
+    [ "-" ] , "0b" , digit_bin , { digit_bin }
+  | [ "-" ] , "0o" , digit_oct , { digit_oct }
+  | [ "-" ] , "0d" , digit_oct , { digit_dec }
+  | [ "-" ] , "0h" , digit_hex , { digit_hex } ;
+
+(* Tokens: String Literals *)
+string = ? a string ? ;
+string_dq = '"' , string , '"' ;
+string_sq = "'" , string , "'" ;
+
+(* Tokens: Identifiers *)
+id = ( "_" | letter ) , { "_" | letter | digit_dec } | literal_id ;
+literal_id = "`" , ( "_" | letter | digit_dec ), { "_" | letter | digit_dec } , "`" ;
+letter = "A" | "B" | "C" | "D" | "E" | "F" | "G"
+       | "H" | "I" | "J" | "K" | "L" | "M" | "N"
+       | "O" | "P" | "Q" | "R" | "S" | "T" | "U"
+       | "V" | "W" | "X" | "Y" | "Z"
+       | "a" | "b" | "c" | "d" | "e" | "f" | "g"
+       | "h" | "i" | "j" | "k" | "l" | "m" | "n"
+       | "o" | "p" | "q" | "r" | "s" | "t" | "u"
+       | "v" | "w" | "x" | "y" | "z" ;
+
+(* Tokens: Fileinfo *)
+info = "@" , "[" , lineinfo, { ",", lineinfo }, "]" ;
+lineinfo = string, " ", linecol ;
+linecol = digit_dec , { digit_dec } , ":" , digit_dec , { digit_dec } ;
+
+(* Tokens: PrimOp Keywords *)
+primop_1expr_keyword =
+    "asUInt" | "asSInt" | "asClock" | "asAsyncReset" | "cvt"
+  | "neg"    | "not"
+  | "andr"   | "orr"    | "xorr" ;
+
+primop_2expr_keyword =
+    "add"  | "sub" | "mul" | "div" | "rem"
+  | "lt"   | "leq" | "gt"  | "geq" | "eq" | "neq"
+  | "dshl" | "dshr"
+  | "and"  | "or"  | "xor" | "cat" ;
+
+primop_1expr1int_keyword =
+    "pad" | "shl" | "shr" | "head" | "tail" ;
+
+primop_1expr2int_keyword = "bits" ;
+
+property_primop_2expr_keyword =
+    "integer_add" | "integer_mul" | "integer_shr" | "integer_shl" ;
+
+property_primop_varexpr_keyword =
+    "List" , "<" , type_property , ">" | "list_concat" ;
