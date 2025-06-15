@@ -97,8 +97,6 @@ impl<'a> ParseTable<'a> {
 
         for (src_state_index, src_state) in states.iter().enumerate() {
             for src_item in src_state.items() {
-//                let spn = tracing::span!(target="FOO", tracing::Level::INFO, "state", state=src_state_index);
-//                tracing::event!(tracing::Level::INFO, state = src_state_index, "State = {src_state_index}");
                 match src_item.next_symbol() {
                     Some(symbol) => {
                         let dst_state = src_state.follow(symbol);
@@ -249,6 +247,7 @@ fn main() {
         .symbol("KW_SKIP")
         .symbol("KW_INPUT")
         .symbol("KW_OUTPUT")
+        .symbol("KW_PUBLIC")
         .symbol("NEWLINE")
         .symbol("DEDENT")
         .symbol("INDENT")
@@ -266,7 +265,10 @@ fn main() {
         .rule("circuit", &["VERSION", "NEWLINE", "KW_CIRCUIT", "ID", "COLON", "NEWLINE", "INDENT", "{decl}", "DEDENT"])
         .rule("{decl}", &[])
         .rule("{decl}", &["{decl}", "decl"])
-        .rule("decl", &["KW_MODULE", "ID", "COLON", "NEWLINE", "INDENT", "KW_SKIP", "NEWLINE", "DEDENT"])
+        .rule("decl", &["decl_module"])
+        .rule("decl_module", &["[public]", "KW_MODULE", "ID", "{enablelayer}", "COLON", "[info]", "NEWLINE", "INDENT", "SKIP", "{stmt}", "DEDENT"])
+        .rule("[public]", &[])
+        .rule("[public]", &["KW_PUBLIC"])
 
         .build();
 

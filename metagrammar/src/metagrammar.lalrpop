@@ -1,0 +1,60 @@
+use crate::*;
+
+grammar;
+
+pub Grammar: Grammar = {
+    <rules:Rule*> => {
+        Grammar { rules }
+    },
+};
+
+Rule: Rule = {
+    <lhs:Nonterm> "=" <rhs:RuleRhs> ";" => {
+        Rule {
+            lhs,
+            rhs,
+        }
+    },
+};
+
+RuleRhs: SymbolExpr = {
+    <alts:(RuleAlt "|")*> <al:RuleAlt> => {
+        let mut alts: Vec<SymbolExpr> = alts.into_iter().map(|(a, _)| a).collect();
+        alts.push(al);
+        SymbolExpr::Alt(alts)
+    },
+};
+
+RuleAlt: SymbolExpr = {
+    <seqs:(SymbolExpr ",")*> <al:SymbolExpr> => {
+        let mut seqs: Vec<SymbolExpr> = seqs.into_iter().map(|(a, _)| a).collect();
+        seqs.push(al);
+        SymbolExpr::Seq(seqs)
+    },
+}
+
+SymbolExpr: SymbolExpr = {
+    <s:Term> => {
+        SymbolExpr::Term(s)
+    },
+    <s:Nonterm> => {
+        SymbolExpr::Nonterm(s)
+    },
+    "[" <s:RuleAlt> "]" => {
+        SymbolExpr::Opt(Box::new(s))
+    },
+    "{" <s:RuleAlt> "}" => {
+        SymbolExpr::Star(Box::new(s))
+    },
+    "(" <s:RuleRhs> ")" => {
+        s
+    },
+};
+
+Nonterm: Symbol = {
+    <s:r"[a-zA-Z_][a-zA-Z_0-9]*"> => s.to_string(),
+};
+
+Term: Symbol = {
+    <s:r#""[^"]+""#> => s.to_string(),
+};

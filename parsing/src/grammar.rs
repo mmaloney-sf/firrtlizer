@@ -390,6 +390,10 @@ impl<'a> Item<'a> {
 }
 
 impl<'a> ItemSet<'a> {
+    pub fn empty(grammar: &'a Grammar) -> ItemSet<'a> {
+        ItemSet(grammar, vec![])
+    }
+
     pub fn singleton(item: Item<'a>) -> ItemSet<'a> {
         let itemset = ItemSet(item.grammar(), vec![item]);
         itemset.closure()
