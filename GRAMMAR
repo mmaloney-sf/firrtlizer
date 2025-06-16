@@ -86,6 +86,7 @@ read_under_write =  "old" | "new" | "undefined" ;
 
 connectlike =
     "connect" , reference , "," , expr , [ info ]
+  | reference , "<=" , expr , [ info ]
   | reference , "is" , "invalid" , [ info ]
   | "invalidate" , reference , [ info ]
   | "attach" , "(" , reference , { "," ,  reference } , ")" , [ info ]
@@ -194,7 +195,7 @@ expr =
   | expr_intrinsic ;
 
 expr_reference = reference ;
-expr_lit = ( "UInt" | "SInt" ) , [ width ] , "(" , int , ")" ;
+expr_lit = ( "UInt" | "SInt" ) , [ width ] , "(" , ( int | string ) , ")" ;
 expr_enum = type_enum , "(" , id , [ "," , expr ] , ")" ;
 expr_mux = "mux" , "(" , expr , "," , expr , "," , expr , ")" ;
 expr_read = "read" , "(" , expr_probe , ")" ;
@@ -240,7 +241,8 @@ type_ground_width =
 
 width = "<" , int , ">" ;
 
-type_bundle = "{" , type_bundle_field , { type_bundle_field } , "}" ;
+type_bundle = "{" , type_bundle_field , { "," , type_bundle_field } , "}"
+            | "{" ,  "}" ;
 type_bundle_field = [ "flip" ] , id , ":" , type ;
 
 type_vec = type , "[" , int , "]" ;
