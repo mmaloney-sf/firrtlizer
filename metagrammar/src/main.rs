@@ -274,6 +274,7 @@ fn main() {
     grammar = grammar.symbol(r#"":""#);
     grammar = grammar.symbol(r#""=""#);
     grammar = grammar.symbol(r#""=>""#);
+    grammar = grammar.symbol(r#""<=""#);
     grammar = grammar.symbol(r#""data-type""#);
     grammar = grammar.symbol(r#""read-latency""#);
     grammar = grammar.symbol(r#""write-latency""#);
@@ -286,6 +287,7 @@ fn main() {
     grammar = grammar.symbol(r#""attach""#);
     grammar = grammar.symbol(r#""depth""#);
     grammar = grammar.symbol(r#""invalidate""#);
+    grammar = grammar.symbol(r#""invalid""#);
     grammar = grammar.symbol(r#""connect""#);
     grammar = grammar.symbol(r#""undefined""#);
     grammar = grammar.symbol(r#""new""#);
@@ -333,6 +335,7 @@ fn main() {
     grammar = grammar.symbol(r#""reg""#);
     grammar = grammar.symbol(r#""regreset""#);
     grammar = grammar.symbol(r#""node""#);
+    grammar = grammar.symbol(r#""is""#);
     grammar = grammar.symbol(r#""input""#);
     grammar = grammar.symbol(r#""output""#);
     grammar = grammar.symbol(r#""cover""#);
@@ -410,6 +413,7 @@ fn massage_tokens<'a>(grammar: &'a parsing::Grammar, lex: FirrtlLexer) -> impl I
                         tokenizer::LexToken::Comma => r#"",""#,
                         tokenizer::LexToken::Colon => r#"":""#,
                         tokenizer::LexToken::Eq => r#""=""#,
+                        tokenizer::LexToken::RevFatArrow => r#""<=""#,
                         tokenizer::LexToken::Dot => r#"".""#,
                         tokenizer::LexToken::String => "string",
                         tokenizer::LexToken::KwModule => r#""module""#,
@@ -421,6 +425,14 @@ fn massage_tokens<'a>(grammar: &'a parsing::Grammar, lex: FirrtlLexer) -> impl I
                         tokenizer::LexToken::KwUInt => r#""UInt""#,
                         tokenizer::LexToken::KwSInt => r#""SInt""#,
                         tokenizer::LexToken::KwClock => r#""Clock""#,
+                        tokenizer::LexToken::KwReset => r#""Reset""#,
+                        tokenizer::LexToken::KwFlip => r#""flip""#,
+                        tokenizer::LexToken::KwWire => r#""wire""#,
+                        tokenizer::LexToken::KwReg => r#""reg""#,
+                        tokenizer::LexToken::KwNode => r#""node""#,
+                        tokenizer::LexToken::KwIs => r#""is""#,
+                        tokenizer::LexToken::KwInvalid => r#""invalid""#,
+                        tokenizer::LexToken::KwInvalidate => r#""invalidate""#,
                     }
                 },
                 tokenizer::Token::Newline => "newline",

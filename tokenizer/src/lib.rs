@@ -51,6 +51,8 @@ pub enum LexToken {
     KwModule,
     #[token(r"skip")]
     KwSkip,
+    #[token(r"flip")]
+    KwFlip,
     #[token(r"input")]
     KwInput,
     #[token(r"output")]
@@ -61,6 +63,20 @@ pub enum LexToken {
     KwSInt,
     #[token(r"Clock")]
     KwClock,
+    #[token(r"Reset")]
+    KwReset,
+    #[token(r"wire")]
+    KwWire,
+    #[token(r"reg")]
+    KwReg,
+    #[token(r"node")]
+    KwNode,
+    #[token(r"is")]
+    KwIs,
+    #[token(r"invalid")]
+    KwInvalid,
+    #[token(r"invalidate")]
+    KwInvalidate,
 
     #[regex(r"([a-zA-Z_][a-zA-Z_0-9]*|`[^`]+`)")]
     Id,
@@ -91,6 +107,8 @@ pub enum LexToken {
     Comma,
     #[token(r":")]
     Colon,
+    #[token(r"<=")]
+    RevFatArrow,
     #[token(r"=")]
     Eq,
     #[token(r".")]

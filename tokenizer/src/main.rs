@@ -15,10 +15,22 @@ circuit Main :
         std::fs::read_to_string(&args[1]).unwrap()
     };
 
+    let limit = match args.get(2) {
+        Some(arg) => arg.parse::<usize>().unwrap(),
+        None => usize::MAX,
+    };
+
     let mut lex = FirrtlLexer::new(&src);
 
+    let mut i = 0;
     let mut level = 0;
     while let Some(Ok(token)) = lex.next() {
+        if i < limit {
+            i += 1;
+        } else {
+            println!();
+            break;
+        }
         if token == Token::Newline {
             let indent = " ".repeat(level);
             print!("{token:?}\n{indent}");
