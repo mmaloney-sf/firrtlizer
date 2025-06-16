@@ -244,10 +244,14 @@ fn main() {
     dbg!(&grammar_data);
 
     let mut grammar = parsing::Grammar::new();
+
+    grammar = grammar.symbol("START");
+
     for nonterminal in grammar_data.nonterminals() {
         eprintln!("{nonterminal:?}");
         grammar = grammar.symbol(nonterminal);
     }
+    eprintln!();
 
     grammar = grammar.symbol("id");
     grammar = grammar.symbol("newline");
@@ -352,19 +356,26 @@ fn main() {
     grammar = grammar.symbol("version");
     grammar = grammar.symbol("annotations");
 
+    grammar = grammar.rule("START", &["circuit"]);
 
     for rule in &grammar_data.rules {
-        dbg!(&rule);
+//        dbg!(&rule);
 //        assert!(rule.is_simple());
         grammar = grammar.rule(&rule.lhs.clone(), &rule.rhs.to_vec());
     }
 
     let grammar = grammar.build();
 
-    dbg!(&grammar);
+    eprintln!("GRAMMAR:");
+    eprintln!("{grammar:?}");
+    eprintln!();
+
+    dbg!(grammar.symbol("decl").unwrap().firsts());
 
     let table = lr0::ParseTable::new(&grammar);
     let mut machine = lr0::Machine::new(&table);
-    dbg!(&machine);
-    // machine.run(&mut input);
+//    dbg!(&machine);
+//     machine.run(&mut input);
+
+    eprintln!("DONE");
 }

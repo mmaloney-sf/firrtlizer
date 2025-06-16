@@ -1,4 +1,4 @@
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 
 pub struct GrammarBuilder {
     pub(crate) symbols: Vec<SymbolData>,
@@ -129,10 +129,17 @@ impl<'a> Symbol<'a> {
     }
 
     pub fn firsts(&self) -> HashSet<Symbol<'a>> {
+        let ff = self.grammar.first_follows();
+        ff.terminals_from(FFNode::First(*self)).into_iter().collect()
+    }
+
+    /*
+    pub fn firsts(&self) -> HashSet<Symbol<'a>> {
         let mut excepts = HashSet::new();
         excepts.insert(*self);
         self.firsts_except(&excepts)
     }
+    */
 
     fn firsts_except(&self, excepts: &HashSet<Symbol<'a>>) -> HashSet<Symbol<'a>> {
         let mut result = HashSet::new();
@@ -169,10 +176,17 @@ impl<'a> Symbol<'a> {
     }
 
     pub fn follows(&self) -> HashSet<Symbol<'a>> {
+        let ff = self.grammar.first_follows();
+        ff.terminals_from(FFNode::Follow(*self)).into_iter().collect()
+    }
+
+    /*
+    pub fn follows(&self) -> HashSet<Symbol<'a>> {
         let mut excepts = HashSet::new();
         excepts.insert(*self);
         self.follows_except(&excepts)
     }
+    */
 
     pub fn follows_except(&self, excepts: &HashSet<Symbol<'a>>) -> HashSet<Symbol<'a>> {
         let mut result = HashSet::new();
@@ -555,4 +569,108 @@ impl Grammar {
         }
         nullables
     }
+
+    pub fn first_follows(&self) -> FirstFollows {
+        let mut first_follows = FirstFollows::new(self);
+        let nullables = self.nullables();
+
+        for rule in self.rules() {
+            for symbol in rule.rhs() {
+                if symbol.is_terminal() {
+                    first_follows.link(FFNode::First(rule.lhs()), FFNode::Terminal(symbol));
+                } else {
+                    first_follows.link(FFNode::First(rule.lhs()), FFNode::First(symbol));
+                } 
+
+                if !nullables.contains(&symbol) {
+                    break;
+                }
+            }
+
+            for (i, symbol) in rule.rhs().iter().copied().enumerate() {
+                for j in i+1..rule.rhs().len() {
+                    let follow = rule.rhs()[j];
+
+                    if follow.is_terminal() {
+                        first_follows.link(FFNode::Follow(symbol), FFNode::Terminal(follow));
+                    } else {
+                        first_follows.link(FFNode::Follow(symbol), FFNode::First(follow));
+                    } 
+                }
+            }
+
+            if let Some(symbol) = rule.rhs().last() {
+                if symbol.is_nonterminal() {
+                    first_follows.link(FFNode::Follow(*symbol), FFNode::Follow(rule.lhs()));
+                }
+            }
+        }
+
+        first_follows
+    }
+}
+
+pub struct FirstFollows<'a> {
+    grammar: &'a Grammar,
+    edges: HashMap<FFNode<'a>, HashSet<FFNode<'a>>>,
+}
+
+impl<'a> std::fmt::Debug for FirstFollows<'a> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        writeln!(f)?;
+        for symbol in self.grammar.symbols() {
+            if let Some(edges) = self.edges.get(&FFNode::First(symbol)) {
+                writeln!(f, "FIRST({symbol:?}) = {edges:?}")?;
+            }
+        }
+        for symbol in self.grammar.symbols() {
+            if let Some(edges) = self.edges.get(&FFNode::Follow(symbol)) {
+                writeln!(f, "FOLLOW({symbol:?}) = {edges:?}")?;
+            }
+        }
+        Ok(())
+    }
+}
+
+impl<'a> FirstFollows<'a> {
+    fn new(grammar: &'a Grammar) -> Self {
+        FirstFollows {
+            grammar,
+            edges: HashMap::new(),
+        }
+    }
+
+    fn link(&mut self, from_node: FFNode<'a>, to_node: FFNode<'a>) {
+        if !self.edges.contains_key(&from_node) {
+            self.edges.insert(from_node, HashSet::new());
+        }
+        self.edges.get_mut(&from_node).unwrap().insert(to_node);
+    }
+
+    fn terminals_from(&self, from_node: FFNode<'a>) -> Vec<Symbol<'a>> {
+        let mut visited = HashSet::new();
+        let mut queue = vec![from_node];
+        let mut terminals = vec![];
+
+        while let Some(node) = queue.pop() {
+            visited.insert(node);
+            if let FFNode::Terminal(symbol) = node {
+                terminals.push(symbol);
+            } else if self.edges.contains_key(&node) {
+                for next_node in &self.edges[&node] {
+                    if !visited.contains(next_node) {
+                        queue.push(*next_node);
+                    }
+                }
+            }
+        }
+        terminals
+    }
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+pub enum FFNode<'a> {
+    First(Symbol<'a>),
+    Follow(Symbol<'a>),
+    Terminal(Symbol<'a>),
 }
