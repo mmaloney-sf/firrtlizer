@@ -84,6 +84,7 @@ fn main() {
 
     let lex = tokenizer::FirrtlLexer::new(&source);
 
+    /*
     eprintln!("Execute:");
     let mut input = lex
         .into_iter()
@@ -125,4 +126,5 @@ fn main() {
         });
     let mut machine = Machine::new(&table);
     machine.run(&mut input);
+*/
 }

@@ -178,7 +178,7 @@ impl<'a, 'b> Machine<'a, 'b> {
         let actions = &self.parse_table.actions.get(&(state, symbol));
 
         if let Some(actions) = actions {
-            assert_eq!(actions.len(), 1);
+            assert_eq!(actions.len(), 1, "Available actions: {actions:?}");
             let action = actions[0];
 
             match action {

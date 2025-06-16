@@ -138,6 +138,38 @@ fn test_follow_nullable() {
 }
 
 #[test]
+fn test_follow_nullable2() {
+    let grammar = Grammar::new()
+        .symbol("A")
+        .symbol("B")
+        .symbol("C")
+        .symbol("D")
+        .symbol("E")
+        .symbol("x")
+        .symbol("y")
+        .symbol("z")
+        .rule("A", &["B", "C", "D"])
+        .rule("B", &["x"])
+        .rule("B", &[])
+        .rule("C", &["y"])
+        .rule("C", &[])
+        .rule("D", &[])
+        .rule("E", &["A", "z"])
+        .build();
+
+    let a = grammar.symbol("A").unwrap();
+    let b = grammar.symbol("B").unwrap();
+    let c = grammar.symbol("C").unwrap();
+    let d = grammar.symbol("D").unwrap();
+    let e = grammar.symbol("E").unwrap();
+    let x = grammar.symbol("x").unwrap();
+    let y = grammar.symbol("y").unwrap();
+    let z = grammar.symbol("z").unwrap();
+
+    assert_eq!(b.follows(), [y, z].iter().copied().collect());
+}
+
+#[test]
 fn test_foo() {
     let grammar = Grammar::new()
         .symbol("A")

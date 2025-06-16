@@ -55,9 +55,17 @@ pub enum LexToken {
     KwInput,
     #[token(r"output")]
     KwOutput,
+    #[token(r"UInt")]
+    KwUInt,
+    #[token(r"SInt")]
+    KwSInt,
+    #[token(r"Clock")]
+    KwClock,
 
-    #[regex(r"(\w+|`[^`]+`)")]
+    #[regex(r"([a-zA-Z_][a-zA-Z_0-9]*|`[^`]+`)")]
     Id,
+    #[regex(r"[0-9]+")]
+    Int,
 
     #[regex(r"@\[[^\]]*]")]
     Info,

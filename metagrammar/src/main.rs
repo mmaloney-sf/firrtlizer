@@ -1,4 +1,5 @@
 use parsing::lr0;
+use tokenizer::FirrtlLexer;
 use std::collections::HashSet;
 
 use metagrammar::GrammarParser;
@@ -15,11 +16,11 @@ impl Grammar {
         let mut rules_left = vec![];
         std::mem::swap(&mut self.rules, &mut rules_left);
 
-        let mut rules = vec![];
+        let mut rules = HashSet::new();
 
         while let Some(rule) = rules_left.pop() {
             if rule.is_simple() {
-                rules.push(rule);
+                rules.insert(rule);
             } else {
                 for rule in rule.split() {
                     rules_left.push(rule);
@@ -27,6 +28,7 @@ impl Grammar {
             }
         }
 
+        let mut rules: Vec<_> = rules.into_iter().collect();
         std::mem::swap(&mut self.rules, &mut rules);
     }
 
@@ -39,7 +41,7 @@ impl Grammar {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Hash, PartialEq, Eq)]
 pub struct Rule {
     lhs: Symbol,
     rhs: SymbolExpr,
@@ -51,7 +53,7 @@ impl std::fmt::Debug for Rule {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Hash, PartialEq, Eq)]
 pub enum SymbolExpr {
     Alt(Vec<SymbolExpr>),
     Seq(Vec<SymbolExpr>),
@@ -374,8 +376,57 @@ fn main() {
 
     let table = lr0::ParseTable::new(&grammar);
     let mut machine = lr0::Machine::new(&table);
-//    dbg!(&machine);
-//     machine.run(&mut input);
+
+    let source = std::fs::read_to_string(&std::env::args().skip(1).next().unwrap()).unwrap();
+
+    let lex = tokenizer::FirrtlLexer::new(&source);
+    let mut input = massage_tokens(&grammar, lex.into_iter());
+    machine.run(&mut input);
 
     eprintln!("DONE");
+}
+
+fn massage_tokens<'a>(grammar: &'a parsing::Grammar, lex: FirrtlLexer) -> impl Iterator<Item=parsing::Symbol<'a>> {
+    lex
+        .into_iter()
+        .map(|token| {
+            let token = token.unwrap();
+            let s = match token {
+                tokenizer::Token::Lex(lex_token) => {
+                    match lex_token {
+                        tokenizer::LexToken::Version => "version",
+                        tokenizer::LexToken::KwCircuit => r#""circuit""#,
+                        tokenizer::LexToken::Id => "id",
+                        tokenizer::LexToken::Int => "int",
+                        tokenizer::LexToken::Info => "info",
+                        tokenizer::LexToken::CurlyLeft => r#""{""#,
+                        tokenizer::LexToken::CurlyRight => r#""}""#,
+                        tokenizer::LexToken::BracketLeft => r#""[""#,
+                        tokenizer::LexToken::BracketRight => r#""]""#,
+                        tokenizer::LexToken::ParenLeft => r#""(""#,
+                        tokenizer::LexToken::ParenRight => r#"")""#,
+                        tokenizer::LexToken::AngLeft => r#""<""#,
+                        tokenizer::LexToken::AngRight => r#"">""#,
+                        tokenizer::LexToken::Comma => r#"",""#,
+                        tokenizer::LexToken::Colon => r#"":""#,
+                        tokenizer::LexToken::Eq => r#""=""#,
+                        tokenizer::LexToken::Dot => r#"".""#,
+                        tokenizer::LexToken::String => "string",
+                        tokenizer::LexToken::KwModule => r#""module""#,
+                        tokenizer::LexToken::KwSkip => r#""skip""#,
+                        tokenizer::LexToken::KwInput => r#""input""#,
+                        tokenizer::LexToken::KwOutput => r#""output""#,
+                        tokenizer::LexToken::Comment => unreachable!(),
+                        tokenizer::LexToken::Newline(_) => unreachable!(),
+                        tokenizer::LexToken::KwUInt => r#""UInt""#,
+                        tokenizer::LexToken::KwSInt => r#""SInt""#,
+                        tokenizer::LexToken::KwClock => r#""Clock""#,
+                    }
+                },
+                tokenizer::Token::Newline => "newline",
+                tokenizer::Token::Indent => "indent",
+                tokenizer::Token::Dedent => "dedent",
+            };
+            grammar.symbol(s).expect(&format!("Could not find symbol {s:?}"))
+        })
 }

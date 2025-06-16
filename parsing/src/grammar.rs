@@ -599,9 +599,13 @@ impl Grammar {
                 }
             }
 
-            if let Some(symbol) = rule.rhs().last() {
+            for symbol in rule.rhs().into_iter().rev() {
                 if symbol.is_nonterminal() {
-                    first_follows.link(FFNode::Follow(*symbol), FFNode::Follow(rule.lhs()));
+                    first_follows.link(FFNode::Follow(symbol), FFNode::Follow(rule.lhs()));
+                }
+
+                if !nullables.contains(&symbol) {
+                    break;
                 }
             }
         }

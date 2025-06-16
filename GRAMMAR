@@ -12,7 +12,7 @@ decl =
   | decl_type_alias ;
 
 decl_module =
-  [ "public" ], "module" , id , { enablelayer } , ":" , [ info ] ,
+  "module" , id , { enablelayer } , ":" , [ info ] ,
     newline , indent ,
     { port , newline } ,
     { statement , newline } ,
@@ -216,7 +216,7 @@ expr_intrinsic = "intrinsic", "(" , id ,
 
 expr_intrinsic_assign = int | string_dq ;
 
-type = ( [ "const" ] , type_hardware ) | type_probe ;
+type = ( type_hardware ) | type_probe ;
 
 type_hardware =
     type_ground
