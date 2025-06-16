@@ -378,6 +378,11 @@ fn main() {
     dbg!(grammar.symbol("decl").unwrap().firsts());
 
     let table = lr0::ParseTable::new(&grammar);
+
+    for conflict in table.conflicts() {
+        eprintln!("CONFLICT: {conflict:?}");
+    }
+
     let mut machine = lr0::Machine::new(&table);
 
     let source = std::fs::read_to_string(&std::env::args().skip(1).next().unwrap()).unwrap();

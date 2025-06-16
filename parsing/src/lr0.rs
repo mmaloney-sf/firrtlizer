@@ -125,7 +125,7 @@ impl<'a> ParseTable<'a> {
                         }
                     }
                     None => {
-                        for symbol in src_item.rule().lhs().follows() {
+                        for symbol in src_item.rule().grammar().symbols() {
                             let mut actions = actions.get_mut(&(src_state_index, Some(symbol))).unwrap();
                             actions.push(Action::Reduce(src_item.rule()));
                         }
@@ -133,9 +133,6 @@ impl<'a> ParseTable<'a> {
                         // End of input
                         let mut actions = actions.get_mut(&(src_state_index, None)).unwrap();
                         actions.push(Action::Reduce(src_item.rule()));
-                        if src_state_index == 7 {
-                            tracing::info!("actions: {actions:?}");
-                        }
                     }
                 }
             }
@@ -153,6 +150,39 @@ impl<'a> ParseTable<'a> {
             .find_map(|(j, st)| if itemset == st { Some(j) } else { None })
             .unwrap()
     }
+
+    pub fn conflicts(&self) -> Vec<Conflict> {
+        let mut conflicts = vec![];
+        for (state_index, _state) in self.states.iter().enumerate() {
+            for symbol in self.grammar.symbols() {
+                let actions = &self.actions[&(state_index, Some(symbol))];
+                if actions.len() > 1 {
+                    conflicts.push(Conflict {
+                        state: state_index,
+                        symbol: Some(symbol),
+                        actions: actions.to_vec(),
+                    });
+                }
+            }
+
+            let actions = &self.actions[&(state_index, None)];
+            if actions.len() > 1 {
+                conflicts.push(Conflict {
+                    state: state_index,
+                    symbol: None,
+                    actions: actions.to_vec(),
+                });
+            }
+        }
+        conflicts
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct Conflict<'a> {
+    state: StateIndex,
+    symbol: Option<Symbol<'a>>,
+    actions: Vec<Action<'a>>,
 }
 
 #[derive(Debug)]
