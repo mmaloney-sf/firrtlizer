@@ -69,6 +69,8 @@ pub enum LexToken {
     KwWire,
     #[token(r"reg")]
     KwReg,
+    #[token(r"regreset")]
+    KwRegReset,
     #[token(r"node")]
     KwNode,
     #[token(r"is")]
@@ -77,10 +79,92 @@ pub enum LexToken {
     KwInvalid,
     #[token(r"invalidate")]
     KwInvalidate,
+    #[token(r"asClock")]
+    KwAsClock,
+    #[token(r"asAsyncReset")]
+    KwAsAsyncReset,
+    #[token(r"inst")]
+    KwInst,
+    #[token(r"connect")]
+    KwConnect,
+    #[token(r"of")]
+    KwOf,
+    #[token(r"extmodule")]
+    KwExtModule,
+    #[token(r"defname")]
+    KwDefName,
+    #[token(r"data-type")]
+    KwDataType,
+    #[token(r"read-latency")]
+    KwReadLatency,
+    #[token(r"write-latency")]
+    KwWriteLatency,
+    #[token(r"layer")]
+    KwLayer,
+    #[token(r"layerblock")]
+    KwLayerBlock,
+    #[token(r"bits")]
+    KwBits,
+    #[token(r"when")]
+    KwWhen,
+    #[token(r"else")]
+    KwElse,
+    #[token(r"asUInt")]
+    KwasUInt,
+    #[token(r"asSInt")]
+    KwAsSInt,
+    #[token(r"cvt")]
+    KwCvt,
+    #[token(r"neg")]
+    KwNeg,
+    #[token(r"not")]
+    KwNot,
+    #[token(r"andr")]
+    KwAndr,
+    #[token(r"orr")]
+    KwOrr,
+    #[token(r"xorr")]
+    KwXorr,
+    #[token(r"add")]
+    KwAdd,
+    #[token(r"sub")]
+    KwSub,
+    #[token(r"mul")]
+    KwMul,
+    #[token(r"div")]
+    KwDiv,
+    #[token(r"rem")]
+    KwRem,
+    #[token(r"lt")]
+    KwLt,
+    #[token(r"leq")]
+    KwLeq,
+    #[token(r"gt")]
+    KwGt,
+    #[token(r"geq")]
+    KwGeq,
+    #[token(r"eq")]
+    KwEq,
+    #[token(r"neq")]
+    KwNeq,
+    #[token(r"dshl")]
+    KwDshl,
+    #[token(r"dshr")]
+    KwDshr,
+    #[token(r"and")]
+    KwAnd,
+    #[token(r"or")]
+    KwOr,
+    #[token(r"xor")]
+    KwXor,
+    #[token(r"cat")]
+    KwCat,
+    #[token(r"intrinsic")]
+    KwIntrinsic,
 
     #[regex(r"([a-zA-Z_][a-zA-Z_0-9]*|`[^`]+`)")]
     Id,
-    #[regex(r"[0-9]+")]
+    #[regex(r"-?(0h)?[0-9]+")]
     Int,
 
     #[regex(r"@\[[^\]]*]")]
@@ -186,7 +270,8 @@ impl<'a> FirrtlLexer<'a> {
                     dbg!(self.span());
                     let span = self.span();
                     eprintln!("{:?}", &self.lex.source()[span.start..span.end + 10]);
-                    todo!()
+                    eprintln!();
+                    panic!()
                 }
                 None => {
                     self.redent(0);

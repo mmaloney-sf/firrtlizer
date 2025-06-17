@@ -26,9 +26,10 @@ decl_extmodule =
   dedent ;
 
 decl_layer =
-  "layer" , id , string , ":" , [ info ] , newline , indent ,
-  { decl_layer , newline } ,
-  dedent ;
+  "layer" , id , "," , id , "," , string , ":" , [ info ] , newline , indent ,
+      { decl_layer },
+  dedent 
+  | "skip" , newline ;
 
 decl_formal =
   "formal" , id , "of" , id , ":" , [ info ] , newline , indent ,
@@ -166,7 +167,7 @@ command =
     [ ":" , id ] , [ info ] ;
 
 layerblock =
-  "layerblock" , id , "of" , id , ":" , [ info ] , newline , indent ,
+  "layerblock" , id ,  ":" , [ info ] , newline , indent ,
     { port , newline } ,
     { statement , newline } ,
   dedent ;
@@ -211,12 +212,15 @@ property_expr_primop = property_primop_2expr | property_primop_varexpr;
 expr_primop = primop_2expr | primop_1expr | primop_1expr1int | primop_1expr2int ;
 
 expr_intrinsic = "intrinsic", "(" , id ,
-  [ "<"   , id , "=" , expr_intrinsic_assign ,
-    { "," , id , "=" , expr_intrinsic_assign } , ">" ] ,
+  [ expr_intrinsic_bracket ] , "," ,
   [ ":" , type ] ,
-  { "," , expr } , ")" ;
+  expr , { "," , expr } , ")" ;
 
-expr_intrinsic_assign = int | string_dq ;
+expr_intrinsic_bracket = 
+      "<" , id , "=" , expr_intrinsic_assign , { "," , id , "=" , expr_intrinsic_assign } , ">"
+    | "<" , id , "=" , expr_intrinsic_assign  , ">" ;
+
+expr_intrinsic_assign = int | string ;
 
 type = ( type_hardware ) | type_probe ;
 
@@ -264,3 +268,16 @@ property_primop_varexpr = property_primop_varexpr_keyword ,
                             "(" , { property_expr } , ")" ;
 
 enablelayer = "enablelayer" , id , { "." , id } ;
+
+primop_1expr_keyword =
+    "asUInt" | "asSInt" | "asClock" | "asAsyncReset" | "cvt"
+  | "neg"    | "not"
+  | "andr"   | "orr"    | "xorr" ;
+
+primop_1expr2int_keyword = "bits" ;
+
+primop_2expr_keyword =
+    "add"  | "sub" | "mul" | "div" | "rem"
+  | "lt"   | "leq" | "gt"  | "geq" | "eq" | "neq"
+  | "dshl" | "dshr"
+  | "and"  | "or"  | "xor" | "cat" ;
