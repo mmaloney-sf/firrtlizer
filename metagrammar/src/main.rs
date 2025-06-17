@@ -534,6 +534,9 @@ fn massage_tokens<'a>(grammar: &'a parsing::Grammar, lex: FirrtlLexer) -> impl I
                         tokenizer::LexToken::KwMport => r#""mport""#,
                         tokenizer::LexToken::KwProbe2 => r#""Probe""#,
                         tokenizer::LexToken::KwRwProbe2 => r#""RWProbe""#,
+                        tokenizer::LexToken::KwDefine => r#""define""#,
+                        tokenizer::LexToken::KwProbe => r#""probe""#,
+                        tokenizer::LexToken::KwRwProbe => r#""rwprobe""#,
                     }
                 },
                 tokenizer::Token::Newline => "newline",

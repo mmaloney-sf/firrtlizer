@@ -185,6 +185,12 @@ pub enum LexToken {
     KwInfer,
     #[token(r"mport")]
     KwMport,
+    #[token(r"define")]
+    KwDefine,
+    #[token(r"probe")]
+    KwProbe,
+    #[token(r"rwprobe")]
+    KwRwProbe,
 
     #[regex(r"([a-zA-Z_][a-zA-Z_0-9]*|`[^`]+`)")]
     Id,

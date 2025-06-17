@@ -212,18 +212,23 @@ impl<'a, 'b> Machine<'a, 'b> {
     fn step(&mut self, symbol: Option<Symbol<'a>>) {
         let state = self.state();
 
-        eprintln!("STEP:   {:?}", self.step);
-        eprintln!("SYMBOL: {:?}", symbol);
-        eprintln!("STACK:  {:?}", &self.stack);
-        eprintln!("STATE:  {:?}", state);
-        let state_rep = format!("{:?}", &self.parse_table.states[state]);
-        for line in state_rep.lines() {
-            eprintln!("    {line}");
+        #[cfg(feature = "debug")]
+        {
+            eprintln!("STEP:   {:?}", self.step);
+            eprintln!("SYMBOL: {:?}", symbol);
+            eprintln!("STACK:  {:?}", &self.stack);
+            eprintln!("STATE:  {:?}", state);
+
+            let state_rep = format!("{:?}", &self.parse_table.states[state]);
+            for line in state_rep.lines() {
+                eprintln!("    {line}");
+            }
         }
 
         let actions = &self.parse_table.actions.get(&(state, symbol));
 
         if let Some(actions) = actions {
+            #[cfg(feature = "debug")]
             eprintln!("ACTIONS:  {:?}", &actions);
             // TODO
             // assert_eq!(actions.len(), 1, "Available actions: {actions:?}");
@@ -237,10 +242,12 @@ impl<'a, 'b> Machine<'a, 'b> {
 
             match action {
                 Action::Shift(dst_state_index) => {
+                    #[cfg(feature = "debug")]
                     eprintln!("ACTION: SHIFT {}", dst_state_index);
                     self.stack.push((dst_state_index, symbol.unwrap()));
                 }
                 Action::Reduce(rule) => {
+                    #[cfg(feature = "debug")]
                     eprintln!("ACTION: REDUCE {:?}", rule);
 
                     self.head.insert(0, rule.lhs());
@@ -262,6 +269,7 @@ impl<'a, 'b> Machine<'a, 'b> {
                 }
             }
         }
+        #[cfg(feature = "debug")]
         eprintln!();
         self.step += 1;
     }
@@ -273,6 +281,7 @@ impl<'a, 'b> Machine<'a, 'b> {
                 self.step(Some(symbol));
             } else {
                 let symbol = input.next();
+                #[cfg(feature = "debug")]
                 eprintln!("READ SYMBOL: {symbol:?}  #{i}");
                 i += 1;
                 self.step(symbol);

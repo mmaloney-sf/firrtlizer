@@ -7,3 +7,6 @@ edition = "2024"
 tokenizer = { path = "../tokenizer" }
 tracing = { version = "0.1.41", features = ["max_level_off"] }
 tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
+
+[features]
+debug = []
