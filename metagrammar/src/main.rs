@@ -395,6 +395,11 @@ fn main() {
     grammar = grammar.symbol(r#""shr""#);
     grammar = grammar.symbol(r#""head""#);
     grammar = grammar.symbol(r#""tail""#);
+    grammar = grammar.symbol(r#""cmem""#);
+    grammar = grammar.symbol(r#""infer""#);
+    grammar = grammar.symbol(r#""mport""#);
+    grammar = grammar.symbol(r#""Probe""#);
+    grammar = grammar.symbol(r#""RWProbe""#);
 
     grammar = grammar.rule("START", &["circuit"]);
 
@@ -524,6 +529,11 @@ fn massage_tokens<'a>(grammar: &'a parsing::Grammar, lex: FirrtlLexer) -> impl I
                         tokenizer::LexToken::KwTail => r#""tail""#,
                         tokenizer::LexToken::KwMux => r#""mux""#,
                         tokenizer::LexToken::KwRead => r#""read""#,
+                        tokenizer::LexToken::KwCmem => r#""cmem""#,
+                        tokenizer::LexToken::KwInfer => r#""infer""#,
+                        tokenizer::LexToken::KwMport => r#""mport""#,
+                        tokenizer::LexToken::KwProbe2 => r#""Probe""#,
+                        tokenizer::LexToken::KwRwProbe2 => r#""RWProbe""#,
                     }
                 },
                 tokenizer::Token::Newline => "newline",

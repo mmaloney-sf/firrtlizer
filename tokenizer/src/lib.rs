@@ -65,8 +65,14 @@ pub enum LexToken {
     KwClock,
     #[token(r"Reset")]
     KwReset,
+    #[token(r"Probe")]
+    KwProbe2,
+    #[token(r"RwProbe")]
+    KwRwProbe2,
     #[token(r"wire")]
     KwWire,
+    #[token(r"cmem")]
+    KwCmem,
     #[token(r"reg")]
     KwReg,
     #[token(r"regreset")]
@@ -175,10 +181,14 @@ pub enum LexToken {
     KwMux,
     #[token(r"read")]
     KwRead,
+    #[token(r"infer")]
+    KwInfer,
+    #[token(r"mport")]
+    KwMport,
 
     #[regex(r"([a-zA-Z_][a-zA-Z_0-9]*|`[^`]+`)")]
     Id,
-    #[regex(r"-?(0h)?[0-9]+")]
+    #[regex(r"-?([0-9]+|0h[0-9a-fA-F]+)")]
     Int,
 
     #[regex(r"@\[[^\]]*]")]
