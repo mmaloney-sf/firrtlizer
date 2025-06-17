@@ -161,6 +161,20 @@ pub enum LexToken {
     KwCat,
     #[token(r"intrinsic")]
     KwIntrinsic,
+    #[token(r"pad")]
+    KwPad,
+    #[token(r"shl")]
+    KwShl,
+    #[token(r"shr")]
+    KwShr,
+    #[token(r"head")]
+    KwHead,
+    #[token(r"tail")]
+    KwTail,
+    #[token(r"mux")]
+    KwMux,
+    #[token(r"read")]
+    KwRead,
 
     #[regex(r"([a-zA-Z_][a-zA-Z_0-9]*|`[^`]+`)")]
     Id,

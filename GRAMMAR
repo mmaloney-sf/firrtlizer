@@ -15,8 +15,10 @@ decl_module =
   "module" , id , { enablelayer } , ":" , [ info ] , newline ,
   indent ,
     { port , newline } ,
-    { statement , newline } ,
+    { statementlike } ,
   dedent ;
+
+statementlike = statement , newline | layerblock ;
 
 decl_extmodule =
   "extmodule" , id , ":" , [ info ] , newline , indent ,
@@ -28,7 +30,7 @@ decl_extmodule =
 decl_layer =
   "layer" , id , "," , id , "," , string , ":" , [ info ] , newline , indent ,
       { decl_layer },
-  dedent 
+  dedent
   | "skip" , newline ;
 
 decl_formal =
@@ -53,7 +55,6 @@ statement =
   | connectlike
   | conditional
   | command
-  | layerblock
   | skip ;
 
 circuit_component =
@@ -100,8 +101,9 @@ conditional =
 
 conditional_when =
   "when" , expr , ":" , [ info ] , newline ,
-    indent , statement, { statement } , dedent ,
-  [ "else" , ":" , indent , statement, { statement } , dedent ] ;
+    indent ,
+        statement , newline , { statement , newline } , dedent ,
+  [ "else" , ":" , indent , statement, newline , { statement , newline } , dedent ] ;
 
 conditional_match =
   "match" , expr , ":" , [ info ] , newline ,
@@ -169,7 +171,7 @@ command =
 layerblock =
   "layerblock" , id ,  ":" , [ info ] , newline , indent ,
     { port , newline } ,
-    { statement , newline } ,
+    { statementlike } ,
   dedent ;
 
 skip = "skip" , [ info ] ;
@@ -216,7 +218,7 @@ expr_intrinsic = "intrinsic", "(" , id ,
   [ ":" , type ] ,
   expr , { "," , expr } , ")" ;
 
-expr_intrinsic_bracket = 
+expr_intrinsic_bracket =
       "<" , id , "=" , expr_intrinsic_assign , { "," , id , "=" , expr_intrinsic_assign } , ">"
     | "<" , id , "=" , expr_intrinsic_assign  , ">" ;
 
@@ -281,3 +283,6 @@ primop_2expr_keyword =
   | "lt"   | "leq" | "gt"  | "geq" | "eq" | "neq"
   | "dshl" | "dshr"
   | "and"  | "or"  | "xor" | "cat" ;
+
+primop_1expr1int_keyword =
+    "pad" | "shl" | "shr" | "head" | "tail" ;

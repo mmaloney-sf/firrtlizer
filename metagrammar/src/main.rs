@@ -314,6 +314,7 @@ fn main() {
     grammar = grammar.symbol(r#""release""#);
     grammar = grammar.symbol(r#""release_initial""#);
     grammar = grammar.symbol(r#""mux""#);
+    grammar = grammar.symbol(r#""read""#);
     grammar = grammar.symbol(r#""stop""#);
     grammar = grammar.symbol(r#""assert""#);
     grammar = grammar.symbol(r#""printf""#);
@@ -389,6 +390,11 @@ fn main() {
     grammar = grammar.symbol(r#""asAsyncReset""#);
     grammar = grammar.symbol(r#""cvt""#);
     grammar = grammar.symbol(r#""intrinsic""#);
+    grammar = grammar.symbol(r#""pad""#);
+    grammar = grammar.symbol(r#""shl""#);
+    grammar = grammar.symbol(r#""shr""#);
+    grammar = grammar.symbol(r#""head""#);
+    grammar = grammar.symbol(r#""tail""#);
 
     grammar = grammar.rule("START", &["circuit"]);
 
@@ -511,6 +517,13 @@ fn massage_tokens<'a>(grammar: &'a parsing::Grammar, lex: FirrtlLexer) -> impl I
                         tokenizer::LexToken::KwOrr => r#""orr""#,
                         tokenizer::LexToken::KwXorr => r#""xorr""#,
                         tokenizer::LexToken::KwIntrinsic => r#""intrinsic""#,
+                        tokenizer::LexToken::KwPad => r#""pad""#,
+                        tokenizer::LexToken::KwShl => r#""shl""#,
+                        tokenizer::LexToken::KwShr => r#""shr""#,
+                        tokenizer::LexToken::KwHead => r#""head""#,
+                        tokenizer::LexToken::KwTail => r#""tail""#,
+                        tokenizer::LexToken::KwMux => r#""mux""#,
+                        tokenizer::LexToken::KwRead => r#""read""#,
                     }
                 },
                 tokenizer::Token::Newline => "newline",
